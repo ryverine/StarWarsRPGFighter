@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Star Wars RPG</title>
+
+    <!-- Added link to the jQuery Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- RESET CSS -->
+    <link rel="stylesheet" href="assets/css/reset.css">
+
+    <!-- Added a link to Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <!-- Added a link to our external stylesheet-->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+<body>
+
+<!-- Jumbotron for Title 
+<div class="jumbotron">
+    <h1 class="text-center">jQuery Calculator</h1>
+    <h3 class="text-center">Perform basic mathematic operations using the power of jQuery!</h3>
+</div>
+-->
+
+<nav class="navbar navbar-dark bg-dark">
+  <h1>Star Wars RPG</h1>
+</nav>
+
+<div class="container">
+
+    <!-- CHARACTERS -->
+    <div class="row">
+      <!-- HEROES -->
+      <div class="col-xs-6">
+        <div class="card">
+          <div class="card-header">
+            <h3>The Rebel Alliance</h3>
+            <h5>Click to select Your Hero!</h5>
+          </div>
+
+          <div class="card-body">
+            <button id="btn-luke" class="btn btn-primary heroCharacter" value="Luke"><span>Luke</span></button>
+            <button id="btn-chewbacca" class="btn btn-primary heroCharacter" value="Chewbacca"><span>Chewbacca</span></button>
+            <br>
+            <button id="btn-han" class="btn btn-primary heroCharacter" value="Han"><span>Han</span></button>
+            <button id="btn-obiwan" class="btn btn-primary heroCharacter" value="Obi-Wan"><span>Obi-Wan</span></button>
+            <br>
+            <button id="btn-leia" class="btn btn-primary heroCharacter" value="Leia"><span>Leia</span></button>
+            <button id="btn-lando" class="btn btn-primary heroCharacter" value="Lando"><span>Lando</span></button>
+            <br>
+            <button id="btn-yoda" class="btn btn-primary heroCharacter" value="Yoda"><span>Yoda</span></button>
+            <button id="btn-wicket" class="btn btn-primary heroCharacter" value="Wicket"><span>Wicket</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VILLANS -->
+      <div class="col-xs-6">
+        <div class="card">
+          <div class="card-header">
+            <h3>The Galactic Empire</h3>
+            <h5>&nbsp</h5>
+          </div>
+
+          <div class="card-body">
+            <button id="btn-darthvader" class="btn btn-primary villianCharacter" value="Darth Vader"><span>Darth Vader</span></button>
+            <button id="btn-palpatine" class="btn btn-primary villianCharacter" value="Palpatine"><span>Palpatine</span></button>
+            <button id="btn-bossk" class="btn btn-primary villianCharacter" value="Bossk"><span>Bossk</span></button>
+            <br>
+            <button id="btn-stormtrooper" class="btn btn-primary villianCharacter" value="Stormtrooper"><span>Stormtrooper</span></button>
+            <button id="btn-sandtrooper" class="btn btn-primary villianCharacter" value="Sandtrooper"><span>Sandtrooper</span></button>
+            <button id="btn-greedo" class="btn btn-primary villianCharacter" value="Greedo"><span>Greedo</span></button>
+            <br>
+            <button id="btn-ig88" class="btn btn-primary villianCharacter" value="IG-88"><span>IG-88</span></button>
+            <button id="btn-bobafett" class="btn btn-primary villianCharacter" value="Boba Fett"><span>Boba Fett</span></button>
+            <button id="btn-tuskenraider" class="btn btn-primary villianCharacter" value="Tusken Raider"><span>Tusken Raider</span></button>
+            <br>
+            <button id="btn-imperial" class="btn btn-primary villianCharacter" value="Imperial Guard"><span>Imperial Guard</span></button>
+            <button id="btn-gamorrean" class="btn btn-primary villianCharacter" value="Gamorrean"><span>Gamorrean</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12 divider"></div>
+    </div>
+
+    <!-- BATTLE GROUND -->
+    <div class="row">
+      <div class="col-xs-5">
+        <div class="card">
+          <div id="heroHeader" class="card-header">HERO</div>
+          <div id="heroArea" class="card-body"></div>
+          <div id="heroStats"class="card-footer text-muted">
+            Hero Stats
+          </div>
+          <div>
+            <button id="btn-attack" type="button" class="btn btn-danger">Attack</button>
+            <button id="btn-defend" type="button" class="btn btn-warning">Defend</button>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="col-xs-1">
+        <div class="card">
+          <div><h3>VS.</h3></div>
+        </div>
+      </div>
+
+      <div class="col-xs-5">
+        <div class="card">
+          <div id="villianHeader" class="card-header">VILLIAN</div>
+          <div id="villianArea" class="card-body"></div>
+          <div id="villianStats" class="card-footer text-muted">
+            Villian Stats
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- /container -->
+
+  <!-- my script -->
+  <script type="text/javascript" src="assets/javascript/game.js"></script>
+
+</body>
+</html>
