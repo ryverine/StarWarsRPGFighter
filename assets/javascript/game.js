@@ -27,7 +27,6 @@ var randomNum = Math.floor(Math.random() * Math.floor(wordsToUse.length));
 // Don't do anything until the page loads.
 $(document).ready(function() 
 {
-
 	var player = {
 		name: "",
 		hp: 0,
@@ -36,14 +35,17 @@ $(document).ready(function()
 		attack: 0,
 		defend: 0,
 		armor: 0,
-		getAttackPower: function() {
-    		return this.strength * this.attack;
-    	},
-    	getDefenseRating: function() {
-    		return this.dexterity * this.defend;
-    	}
+		counterAttack: 0,
+		xpModifier: 0,
+		getAttackPower: function() {},
+		getDefenseRating: function() {},
+		getCounterAttackPower: function(){},
+		levelUp: function(){}
 	};
 
+	var playerBaseHealth = 0;
+
+	var gameEventsOutput = $("#gameEvents");
 
 	var opponents = setOpponents();
 
@@ -61,6 +63,7 @@ $(document).ready(function()
 		else
 		{
 			setPlayerCharacter($(this).val());
+			playerBaseHealth = player.hp;
 			logGameStats();
 			setBattleGround();
 		}
@@ -74,35 +77,43 @@ $(document).ready(function()
 
 		if(player.name.length > 0)
 		{
-			var playerAttack = player.getAttackPower();
-			// calculate critical hit chance
+			var playerAttack = Math.abs(player.getAttackPower() - opponent.getDefenseRating());
 
-			var opponentDefense = opponent.getDefenseRating();
-
-			//calculate armor reduction first
-			if (opponent.armor > 0)
-			{
-				playerAttack = playerAttack - (playerAttack * (opponent.armor/playerAttack));
-
-				// Math.abs(playerAttack - opponent.armor); 
-				// opponent.armor--;
-			}
+			alert("playerAttack = " + playerAttack);
 
 			opponent.hp = Math.floor(opponent.hp - playerAttack);
+
+			alert("opponent.hp = " + opponent.hp);
+ 
+			gameEventsOutput.append("<br>" + player.name + " hits " + opponent.name + " for " + playerAttack + " points.")
+
+			var opponentCounter = Math.abs(opponent.getCounterAttackPower() - player.getDefenseRating());
+
+			alert("opponentCounter = " + opponentCounter);
+
+			player.hp = Math.floor(player.hp - opponentCounter);
+
+			alert("player.hp = " + player.hp);
+
+			gameEventsOutput.append("<br>" + opponent.name + " counter attacks " + player.name + " for " + opponentCounter + " points.")
 
 			if(opponent.hp <= 0)
 			{
 				console.log(player.name + " defeated " + opponent.name + "!");
-				// alert(player.name + " defeated " + opponent.name + "!");
+				alert(player.name + " defeated " + opponent.name + "!");
 
 				if(fightNumber == (opponents.length - 1))
 				{
 					console.log("Player defeated last opponent!");
+					alert(player.name + " has saved the galaxy!");
 					setTimeout(setBattleGround,1000);
 				}
 				else
 				{
-					// resetOpponet(opponent.name);//so that we can reuse some villians
+					player.hp = playerBaseHealth;
+					player.levelUp();
+					playerBaseHealth = player.hp;
+
 					fightNumber++;
 					opponent = opponents[fightNumber];
 					setTimeout(setBattleGround,1000);
@@ -132,6 +143,12 @@ $(document).ready(function()
 			console.log("No player character selected!");
 		}
 	});
+
+	function rollDice(dieType, numDie)
+	{
+		var roll = Math.floor((Math.random() * Math.floor(dieType)) + 1) * numDie;
+		return roll;
+	}
 
 	function setBattleGround()
 	{
@@ -196,12 +213,22 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armor: 0,
+				counterAttack: 2,
+				xpModifier: 2,
 				getAttackPower: function() {
     				return this.strength * this.attack;
     			},
     			getDefenseRating: function() {
-    				return this.dexterity * this.defend;
-    			}
+    				return ((this.dexterity * this.defend) + this.armor);
+				},
+				getCounterAttackPower: function() {
+					return this.counterAttack + this.dexterity + rollDice(4,1);
+				},
+				levelUp: function() {
+					this.hp += rollDice(6,1) * this.xpModifier;
+					this.strength += rollDice(4,1) + this.xpModifier;
+					this.dexterity += rollDice(4,1) + this.xpModifier;
+				}
     		};
 		}
 		else if (theCharacter === "Chewbacca")
@@ -215,12 +242,22 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armor: 0,
+				counterAttack: 2,
+				xpModifier: 2,
 				getAttackPower: function() {
     				return this.strength * this.attack;
     			},
     			getDefenseRating: function() {
-    				return this.dexterity * this.defend;
-    			}
+    				return ((this.dexterity * this.defend) + this.armor);
+				},
+				getCounterAttackPower: function() {
+					return this.attack + this.dexterity + rollDice(6,1);
+				},
+				levelUp: function() {
+					this.hp += rollDice(6,1) * this.xpModifier;
+					this.strength += rollDice(4,1) + this.xpModifier;
+					this.dexterity += rollDice(4,1) + this.xpModifier;
+				}
     		};
 		}
 		else if (theCharacter === "Han")
@@ -234,12 +271,22 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armor: 0,
+				counterAttack: 2,
+				xpModifier: 2,
 				getAttackPower: function() {
     				return this.strength * this.attack;
     			},
     			getDefenseRating: function() {
-    				return this.dexterity * this.defend;
-    			}
+    				return ((this.dexterity * this.defend) + this.armor);
+				},
+				getCounterAttackPower: function() {
+					return this.attack + this.dexterity + rollDice(6,1);
+				},
+				levelUp: function() {
+					this.hp += rollDice(6,1) * this.xpModifier;
+					this.strength += rollDice(4,1) + this.xpModifier;
+					this.dexterity += rollDice(4,1) + this.xpModifier;
+				}
     		};
 		}
 		else if (theCharacter === "Obi-Wan")
@@ -253,12 +300,22 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armor: 0,
+				counterAttack: 2,
+				xpModifier: 2,
 				getAttackPower: function() {
     				return this.strength * this.attack;
     			},
     			getDefenseRating: function() {
-    				return this.dexterity * this.defend;
-    			}
+    				return ((this.dexterity * this.defend) + this.armor);
+				},
+				getCounterAttackPower: function() {
+					return this.attack + this.dexterity + rollDice(6,1);
+				},
+				levelUp: function() {
+					this.hp += rollDice(6,1) * this.xpModifier;
+					this.strength += rollDice(4,1) + this.xpModifier;
+					this.dexterity += rollDice(4,1) + this.xpModifier;
+				}
     		};
 		}
 		else if (theCharacter === "Leia")
@@ -272,12 +329,22 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armor: 0,
+				counterAttack: 2,
+				xpModifier: 2,
 				getAttackPower: function() {
     				return this.strength * this.attack;
     			},
     			getDefenseRating: function() {
-    				return this.dexterity * this.defend;
-    			}
+    				return ((this.dexterity * this.defend) + this.armor);
+				},
+				getCounterAttackPower: function() {
+					return this.attack + this.dexterity + rollDice(6,1);
+				},
+				levelUp: function() {
+					this.hp += rollDice(6,1) * this.xpModifier;
+					this.strength += rollDice(4,1) + this.xpModifier;
+					this.dexterity += rollDice(4,1) + this.xpModifier;
+				}
     		};
 		}
 		else if (theCharacter === "Lando")
@@ -291,12 +358,22 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armor: 0,
+				counterAttack: 2,
+				xpModifier: 2,
 				getAttackPower: function() {
     				return this.strength * this.attack;
     			},
     			getDefenseRating: function() {
-    				return this.dexterity * this.defend;
-    			}
+    				return ((this.dexterity * this.defend) + this.armor);
+				},
+				getCounterAttackPower: function() {
+					return this.attack + this.dexterity + rollDice(6,1);
+				},
+				levelUp: function() {
+					this.hp += rollDice(6,1) * this.xpModifier;
+					this.strength += rollDice(4,1) + this.xpModifier;
+					this.dexterity += rollDice(4,1) + this.xpModifier;
+				}
     		};
 		}
 		else if (theCharacter === "Yoda")
@@ -310,12 +387,22 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armor: 0,
+				counterAttack: 2,
+				xpModifier: 2,
 				getAttackPower: function() {
     				return this.strength * this.attack;
     			},
     			getDefenseRating: function() {
-    				return this.dexterity * this.defend;
-    			}
+    				return ((this.dexterity * this.defend) + this.armor);
+				},
+				getCounterAttackPower: function() {
+					return this.attack + this.dexterity + rollDice(6,1);
+				},
+				levelUp: function() {
+					this.hp += rollDice(6,1) * this.xpModifier;
+					this.strength += rollDice(4,1) + this.xpModifier;
+					this.dexterity += rollDice(4,1) + this.xpModifier;
+				}
     		};
 		}
 		else if (theCharacter === "Wicket")
@@ -329,12 +416,22 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armor: 0,
+				counterAttack: 2,
+				xpModifier: 2,
 				getAttackPower: function() {
     				return this.strength * this.attack;
     			},
     			getDefenseRating: function() {
-    				return this.dexterity * this.defend;
-    			}
+    				return ((this.dexterity * this.defend) + this.armor);
+				},
+				getCounterAttackPower: function() {
+					return this.attack + this.dexterity + rollDice(6,1);
+				},
+				levelUp: function() {
+					this.hp += rollDice(6,1) * this.xpModifier;
+					this.strength += rollDice(4,1) + this.xpModifier;
+					this.dexterity += rollDice(4,1) + this.xpModifier;
+				}
     		};
 		}
 		else
@@ -358,11 +455,15 @@ $(document).ready(function()
 			attack: 2,
 			defend: 5,
 			armor: 0,
+			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return this.dexterity * this.defend;
+				return ((this.dexterity * this.defend) + this.armor);
+			},
+			getCounterAttackPower: function() {
+				return this.counterAttack + this.dexterity + rollDice(6,1);
 			}
 		};
 
@@ -375,11 +476,15 @@ $(document).ready(function()
 			attack: 2,
 			defend: 5,
 			armor: 5,
+			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return this.dexterity * this.defend;
+				return ((this.dexterity * this.defend) + this.armor);
+			},
+			getCounterAttackPower: function() {
+				return this.counterAttack + this.dexterity + rollDice(6,1);
 			}
 		};
 
@@ -392,11 +497,15 @@ $(document).ready(function()
 			attack: 2,
 			defend: 5,
 			armor: 8,
+			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return this.dexterity * this.defend;
+				return ((this.dexterity * this.defend) + this.armor);
+			},
+			getCounterAttackPower: function() {
+				return this.counterAttack + this.dexterity + rollDice(6,1);
 			}
 		};
 
@@ -409,11 +518,15 @@ $(document).ready(function()
 			attack: 2,
 			defend: 5,
 			armor: 10,
+			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return this.dexterity * this.defend;
+				return ((this.dexterity * this.defend) + this.armor);
+			},
+			getCounterAttackPower: function() {
+				return this.counterAttack + this.dexterity + rollDice(6,1);
 			}
 		};
 
@@ -426,11 +539,15 @@ $(document).ready(function()
 			attack: 2,
 			defend: 5,
 			armor: 15,
+			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return this.dexterity * this.defend;
+				return ((this.dexterity * this.defend) + this.armor);
+			},
+			getCounterAttackPower: function() {
+				return this.counterAttack+ this.dexterity + rollDice(6,1);
 			}
 		};
 
@@ -443,11 +560,15 @@ $(document).ready(function()
 			attack: 2,
 			defend: 5,
 			armor: 0,
+			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return this.dexterity * this.defend;
+				return ((this.dexterity * this.defend) + this.armor);
+			},
+			getCounterAttackPower: function() {
+				return this.counterAttack + this.dexterity + rollDice(6,1);
 			}
 		};
 
@@ -548,13 +669,18 @@ $(document).ready(function()
 		this.attack = theAttack;
 		this.defend = theDefend;
 		this.armor = 2;		
+		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
 			return (this.strength * this.attack);
 		};
 
 		this.getDefenseRating = function() {
-			return (this.dexterity * this.defend);
+			return ((this.dexterity * this.defend) + this.armor);
+		};
+
+		this.getCounterAttackPower = function(){
+			return this.counterAttack + this.dexterity + rollDice(6,1);
 		};
 	}
 
@@ -568,13 +694,18 @@ $(document).ready(function()
 		this.attack = theAttack;
 		this.defend = theDefend;
 		this.armor = 5;
+		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
 			return (this.strength * this.attack);
 		};
 
 		this.getDefenseRating = function() {
-			return (this.dexterity * this.defend);
+			return ((this.dexterity * this.defend) + this.armor);
+		};
+
+		this.getCounterAttackPower = function(){
+			return this.counterAttack + this.dexterity + rollDice(6,1);
 		};
 	}
 
@@ -588,13 +719,18 @@ $(document).ready(function()
 		this.attack = theAttack;
 		this.defend = theDefend;
 		this.armor = 6;
+		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
 			return (this.strength * this.attack);
 		};
 
 		this.getDefenseRating = function() {
-			return (this.dexterity * this.defend);
+			return ((this.dexterity * this.defend) + this.armor);
+		};
+
+		this.getCounterAttackPower = function(){
+			return this.counterAttack + this.dexterity + rollDice(6,1);
 		};
 	}
 
@@ -608,13 +744,18 @@ $(document).ready(function()
 		this.attack = theAttack;
 		this.defend = theDefend;
 		this.armor = 7;
+		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
 			return (this.strength * this.attack);
 		};
 
 		this.getDefenseRating = function() {
-			return ((this.dexterity * this.defend) + armor);
+			return ((this.dexterity * this.defend) + this.armor);
+		};
+
+		this.getCounterAttackPower = function(){
+			return this.counterAttack + this.dexterity + rollDice(6,1);
 		};
 	}
 
@@ -628,13 +769,18 @@ $(document).ready(function()
 		this.attack = theAttack;
 		this.defend = theDefend;
 		this.armor = 10;
+		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
 			return (this.strength * this.attack);
 		};
 
 		this.getDefenseRating = function() {
-			return (this.dexterity * this.defend);
+			return ((this.dexterity * this.defend) + this.armor);
+		};
+
+		this.getCounterAttackPower = function(){
+			return this.counterAttack + this.dexterity + rollDice(6,1);
 		};
 	}
 
