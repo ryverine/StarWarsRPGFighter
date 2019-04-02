@@ -2,8 +2,10 @@
 Select all spans that are immediate children of buttons 
 From calculator
 */
+
 button > span {
-    font-size: 2.5rem;
+    font-size: 20px;
+    font-weight: bolder;
 }
 
 .btn-primary{
@@ -16,3 +18,15 @@ button > span {
 	width: 100%;
 	margin: 2px;
 }
+
+.characterName{
+	margin: auto;
+	font-size: 30px;
+    font-weight: bold;
+}
+
+.characterClass{
+	margin: auto;
+	font-size: 20px;
+}
+

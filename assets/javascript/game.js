@@ -1,146 +1,146 @@
 /*
 
-Star Wars (1977)
-http://readcomiconline.to/Comic/Star-Wars-1977
 
-Font:
-https://www.dafont.com/star-jedi.font
-
-// sounds for each character's attack and defend.
-
-
-https://www.w3schools.com/js/js_math.asp
-
-*/
-
-/*
-CRITICAL HITS
-http://dnd.wizards.com/dungeons-and-dragons/start-playing
-https://www.polygon.com/2018/5/26/17153274/dnd-how-to-play-dungeons-dragons-5e-guide-spells-dice-character-sheets-dm
-
-http://archive.wizards.com/default.asp?x=dnd/glossary&term=Glossary_dnd_criticalhit&alpha=C
-
-var randomNum = Math.floor(Math.random() * Math.floor(wordsToUse.length));
 
 */
 
 // Don't do anything until the page loads.
 $(document).ready(function() 
 {
-	var player = {
-		name: "",
-		hp: 0,
-		strength: 0,
-		dexterity: 0,
-		attack: 0,
-		defend: 0,
-		armor: 0,
-		counterAttack: 0,
-		xpModifier: 0,
-		getAttackPower: function() {},
-		getDefenseRating: function() {},
-		getCounterAttackPower: function(){},
-		levelUp: function(){}
-	};
+
+	var gameOverFlag = false;
+
+	var player = new EmptyCharacter();
+	var opponent = new EmptyCharacter();
 
 	var playerBaseHealth = 0;
 
-	var gameEventsOutput = $("#gameEvents");
+	var fightEventsOutput = $("#fightEvents");
 
-	var opponents = setOpponents();
+	// when player selects "story" gameMode
+	// var opponents = setOpponents(); 
+	// var fightNumber = 0;
+	// var opponent  = opponents[fightNumber];
 
 	var fightNumber = 0;
-
-	var opponent  = opponents[fightNumber];
 	
-	//hero button clicked
+	// hero selected
 	$(".heroCharacter").on("click", function() {
 
-		if(player.name.length > 0)
+		if(!gameOverFlag)
 		{
-			console.log("Player character already selected!")
+			fightEventsOutput.text("");// always make sure this is clear when new game/round starts
+
+			if(player.name.length > 0)
+			{
+				console.log("Player character already selected!");
+			}
+			else
+			{
+				setPlayerCharacter($(this).val());
+				playerBaseHealth = player.hp;
+				logGameStats();
+				refreshBattleGround();
+			}
 		}
-		else
+	});
+
+	// villian selected
+	$(".villianCharacter").on("click", function()
+	{
+		if(!gameOverFlag)
 		{
-			setPlayerCharacter($(this).val());
-			playerBaseHealth = player.hp;
-			logGameStats();
-			setBattleGround();
+			fightEventsOutput.text("");// always make sure this is clear when new game/round starts
+
+			if(opponent.name.length > 0)
+			{
+				console.log("Villian character already selected!");
+			}
+			else
+			{
+				fightNumber++;
+				setOpponentCharacter($(this).val());
+				logGameStats();
+				refreshBattleGround();
+				$("#battleOrder").append("Round " + fightNumber + ": " + $(this).val() + "<br>");
+			}
 		}
-		
 	});
 
 	//attack button onclick
-	$("#btn-attack").on("click", function() {
-
-		console.log("ATTACK button clicked!");
-
-		if(player.name.length > 0)
+	$("#btn-attack").on("click", function()
+	{
+		if(!gameOverFlag)
 		{
-			var playerAttack = Math.abs(player.getAttackPower() - opponent.getDefenseRating());
+			//console.log("ATTACK button clicked!");
 
-			alert("playerAttack = " + playerAttack);
-
-			opponent.hp = Math.floor(opponent.hp - playerAttack);
-
-			alert("opponent.hp = " + opponent.hp);
- 
-			gameEventsOutput.append("<br>" + player.name + " hits " + opponent.name + " for " + playerAttack + " points.")
-
-			var opponentCounter = Math.abs(opponent.getCounterAttackPower() - player.getDefenseRating());
-
-			alert("opponentCounter = " + opponentCounter);
-
-			player.hp = Math.floor(player.hp - opponentCounter);
-
-			alert("player.hp = " + player.hp);
-
-			gameEventsOutput.append("<br>" + opponent.name + " counter attacks " + player.name + " for " + opponentCounter + " points.")
-
-			if(opponent.hp <= 0)
+			//make sure we have a hero and a villian
+			if(player.name.length > 0 && opponent.name.length > 0)
 			{
-				console.log(player.name + " defeated " + opponent.name + "!");
-				alert(player.name + " defeated " + opponent.name + "!");
-
-				if(fightNumber == (opponents.length - 1))
+				attackAction(player,opponent);
+				
+				if (opponent.hp <= 0) //player defeated opponent
 				{
-					console.log("Player defeated last opponent!");
-					alert(player.name + " has saved the galaxy!");
-					setTimeout(setBattleGround,1000);
-				}
-				else
-				{
+					opponent.hp = 0;
+					console.log(player.name + " defeated " + opponent.name + "!");
+				
+					fightEventsOutput.append(player.name + " defeated " + opponent.name + "!" + "<br>");
+				
+					// reset player health and level up
 					player.hp = playerBaseHealth;
 					player.levelUp();
 					playerBaseHealth = player.hp;
 
-					fightNumber++;
-					opponent = opponents[fightNumber];
-					setTimeout(setBattleGround,1000);
+					// reset villian so player can choose next fight
+					// put a "defeated" image on villain and prevent user from re-selecting?
+					opponent = new EmptyCharacter ();
+
+					refreshBattleGround();
+
+					setTimeout(startNextRound,1000);
+				}
+				else
+				{
+					attackAction(opponent,player);
+
+					if (player.hp <= 0) 
+					{
+						player.hp = 0;
+
+						console.log(opponent.name + " defeated " + player.name + "!");
+
+						fightEventsOutput.append(opponent.name + " defeated " + player.name + "!" + "<br>");
+
+						refreshBattleGround();
+
+						setTimeout(gameOver,1000);
+					}
 				}
 			}
 			else
 			{
-				setBattleGround();
+				console.log("Must select hero and villian character!");
 			}
-		}
-		else
-		{
-			console.log("No player character selected!");
+
+			refreshBattleGround();
 		}
 	});
 
 	//defend button onclick
-	$("#btn-defend").on("click", function() {
-		console.log("DEFEND button clicked!");
-
-		if(player.name.length > 0)
+	$("#btn-defend").on("click", function() 
+	{
+		if(!gameOverFlag)
 		{
+			//console.log("DEFEND button clicked!");
 
-		}
-		else
-		{
-			console.log("No player character selected!");
+			if(player.name.length > 0 && opponent.name.length > 0)
+			{
+				//nothing yet
+			}
+			else
+			{
+				console.log("No player character selected!");
+			}
 		}
 	});
 
@@ -150,25 +150,103 @@ $(document).ready(function()
 		return roll;
 	}
 
-	function setBattleGround()
+	function refreshBattleGround()
 	{
-		$("#heroHeader").text(player.name);
+		console.log("refreshBattleGround()");
+
+		$("#heroName").text(player.name);
+		$("#heroClass").text(player.characterClass);
 		$("#heroStats").text("HP: " + player.hp);
+		$("#heroStats").append("<br>" + "Str: " + player.strength);
+		$("#heroStats").append("<br>" + "Dex: " + player.dexterity);
 		$("#heroStats").append("<br>" + "Attack: " + player.attack);
 		$("#heroStats").append("<br>" + "Defense: " + player.defend);
-		$("#heroStats").append("<br>" + "Armor: " + player.armor);
+		$("#heroStats").append("<br>" + "Armor: " + player.armorClass);
 
-		$("#villianHeader").text(opponent.name);
+		$("#villianName").text(opponent.name);
+		$("#villianClass").text(opponent.characterClass);
 		$("#villianStats").text("HP: " + opponent.hp);
+		$("#villianStats").append("<br>" + "Str: " + player.strength);
+		$("#villianStats").append("<br>" + "Dex: " + player.dexterity);
 		$("#villianStats").append("<br>" + "Attack: " + opponent.attack);
 		$("#villianStats").append("<br>" + "Defense: " + opponent.defend);
-		$("#villianStats").append("<br>" + "Armor: " + opponent.armor);
+		$("#villianStats").append("<br>" + "Armor: " + opponent.armorClass);
+	}
+
+	function attackAction(theAttacker, theAttacked)
+	{
+		var comboHits = theAttacker.getComboHits();
+
+		for(var i = 0; i < comboHits; i++)
+		{
+			if(theAttacker.getAttackRoll() >= theAttacked.armorClass)
+			{
+				var damage = theAttacker.getAttackPower();
+
+				theAttacked.hp = theAttacked.hp - damage;
+
+				fightEventsOutput.append(theAttacker.name + " attacks " + theAttacked.name + " for " + damage + " DMG points." + "<br>");
+			}
+			else
+			{
+				fightEventsOutput.append(theAttacker.name + " attack missed " + theAttacked.name + "<br>");
+			}
+		}
+	}
+
+	function counterAttackAction(theAttacker, theAttacked)
+	{
+		// this will be used once defend button is active
+		/*
+		var attackRoll = rollDice(20,1) + theAttacker.counterAttack;
+		// attack roll needs to be function of character, because dex or str can be a modifier
+
+		if(attackRoll >= theAttacked.armorClass)
+		{
+			var damage = theAttacker.getCounterAttackPower();
+
+			theAttacked.hp = Math.abs(theAttacked.hp - damage);
+
+			fightEventsOutput.append(theAttacker.name + " counter attacks " + theAttacked.name + " for " + damage + " DMG points." + "<br>");
+		}
+		else
+		{
+			fightEventsOutput.append(theAttacker.name + " counter attack missed " + theAttacked.name + "<br>");
+		}
+		*/
+	}
+
+
+	function startNextRound()
+	{
+		console.log("startNextRound()");
+		alert("Select next villian for " + player.name + " to fight!");
+		fightEventsOutput.text("");
+	}
+
+	function gameOver()
+	{
+		console.log("gameOver()");
+		var playAgain = confirm("GAME OVER" + "\n" + player.name + " was defeated by " + opponent.name + "!" + "\n" + "Would you like to play again?");
+
+		if (playAgain)
+		{
+			// reset game
+			player = new EmptyCharacter();
+			opponent = new EmptyCharacter();
+		}
+		else
+		{
+			gameOverFlag = true;
+		}
 	}
 
 	function logGameStats()
 	{
 		console.log("***** CURRENT GAME STATS *****");
 		console.log("Player Character:");
+		console.log("** ID: " + player.id);
+		console.log("** Class: " + player.characterClass);
 		console.log("** Name: " + player.name);
 		console.log("** HP: " + player.hp);
 		console.log("** Strength: " + player.strength);
@@ -179,6 +257,8 @@ $(document).ready(function()
 		console.log("** Attack Power: " + player.getAttackPower());
 		console.log("** Defense Rating: " + player.getDefenseRating());
 		console.log("Current Opponent:")
+		console.log("** ID: " + opponent.id);
+		console.log("** Class: " + opponent.characterClass);
 		console.log("** Name: " + opponent.name);
 		console.log("** HP: " + opponent.hp);
 		console.log("** Strength: " + opponent.strength);
@@ -188,12 +268,13 @@ $(document).ready(function()
 		console.log("** Armor: " + opponent.armor);
 		console.log("** Attack Power: " + opponent.getAttackPower());
 		console.log("** Defense Rating: " + opponent.getDefenseRating());
+		/*
 		console.log("Opponent Fight Order: ");
 
-		for(var i = 0; i < opponents.length; i++)
+		/*for(var i = 0; i < opponents.length; i++)
 		{
 			console.log("[" + i + "]: " + opponents[i].name);
-		}
+		}*/
 
 		console.log("******************************");
 	}
@@ -206,23 +287,30 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 101,
+				characterClass: "Jedi",
 				name: "Luke Skywalker",
-				hp: 200,
-				strength: 10,
-				dexterity: 10,
-				attack: 2,
-				defend: 5,
-				armor: 0,
+				hp: 100,
+				strength: 5,
+				dexterity: 5,
+				attack: 4, // proficiency with weapon
+				defend: 5, // 
+				armorClass: 12,
 				counterAttack: 2,
 				xpModifier: 2,
+				getAttackRoll: function() {
+					return (rollDice(20,1) + this.strength + this.attack);
+				},
+				getComboHits: function() {
+					return 1;
+				},
 				getAttackPower: function() {
-    				return this.strength * this.attack;
+    				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return ((this.dexterity * this.defend) + this.armor);
+    				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return this.counterAttack + this.dexterity + rollDice(4,1);
+					return (rollDice(4,1) + this.counterAttack);
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -235,23 +323,30 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 102,
+				characterClass: "Outlaw",
 				name: "Chewbacca",
-				hp: 200,
-				strength: 10,
-				dexterity: 10,
-				attack: 2,
+				hp: 100,
+				strength: 8,
+				dexterity: 3,
+				attack: 4,
 				defend: 5,
-				armor: 0,
+				armorClass: 10,
 				counterAttack: 2,
 				xpModifier: 2,
+				getAttackRoll: function() {
+					return (rollDice(20,1) + this.strength + this.attack);
+				},
+				getComboHits: function() {
+					return rollDice(4,1);
+				},
 				getAttackPower: function() {
-    				return this.strength * this.attack;
+    				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return ((this.dexterity * this.defend) + this.armor);
+    				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return this.attack + this.dexterity + rollDice(6,1);
+					return (this.counterAttack + rollDice(4,1));
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -264,23 +359,30 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 103,
+				characterClass: "Outlaw",
 				name: "Han Solo",
-				hp: 200,
-				strength: 10,
-				dexterity: 10,
+				hp: 100,
+				strength: 5,
+				dexterity: 5,
 				attack: 2,
 				defend: 5,
-				armor: 0,
+				armorClass: 10,
 				counterAttack: 2,
 				xpModifier: 2,
+				getAttackRoll: function() {
+					return (rollDice(20,1) + this.strength + this.attack);
+				},
+				getComboHits: function() {
+					return 1;
+				},
 				getAttackPower: function() {
-    				return this.strength * this.attack;
+    				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return ((this.dexterity * this.defend) + this.armor);
+    				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return this.attack + this.dexterity + rollDice(6,1);
+					return (this.counterAttack + rollDice(4,1));
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -293,23 +395,30 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 104,
+				characterClass: "Jedi",
 				name: "Obi-Wan Kenobi",
-				hp: 200,
-				strength: 10,
-				dexterity: 10,
+				hp: 100,
+				strength: 5,
+				dexterity: 5,
 				attack: 2,
 				defend: 5,
-				armor: 0,
+				armorClass: 10,
 				counterAttack: 2,
 				xpModifier: 2,
+				getAttackRoll: function() {
+					return (rollDice(20,1) + this.strength + this.attack);
+				},
+				getComboHits: function() {
+					return 1;
+				},
 				getAttackPower: function() {
-    				return this.strength * this.attack;
+    				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return ((this.dexterity * this.defend) + this.armor);
+    				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return this.attack + this.dexterity + rollDice(6,1);
+					return (this.counterAttack + rollDice(4,1));
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -322,23 +431,30 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 105,
+				characterClass: "Princess",
 				name: "Leia Organa",
-				hp: 200,
-				strength: 10,
-				dexterity: 10,
+				hp: 100,
+				strength: 5,
+				dexterity: 5,
 				attack: 2,
 				defend: 5,
-				armor: 0,
+				armorClass: 10,
 				counterAttack: 2,
 				xpModifier: 2,
+				getAttackRoll: function() {
+					return (rollDice(20,1) + this.strength + this.attack);
+				},
+				getComboHits: function() {
+					return 1;
+				},
 				getAttackPower: function() {
-    				return this.strength * this.attack;
+    				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return ((this.dexterity * this.defend) + this.armor);
+    				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return this.attack + this.dexterity + rollDice(6,1);
+					return (this.counterAttack + rollDice(4,1));
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -351,23 +467,30 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 106,
+				characterClass: "Outlaw",
 				name: "Lando Calrissian",
-				hp: 200,
-				strength: 10,
-				dexterity: 10,
+				hp: 100,
+				strength: 5,
+				dexterity: 5,
 				attack: 2,
 				defend: 5,
-				armor: 0,
+				armorClass: 10,
 				counterAttack: 2,
 				xpModifier: 2,
+				getAttackRoll: function() {
+					return (rollDice(20,1) + this.strength + this.attack);
+				},
+				getComboHits: function() {
+					return 1;
+				},
 				getAttackPower: function() {
-    				return this.strength * this.attack;
+    				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return ((this.dexterity * this.defend) + this.armor);
+    				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return this.attack + this.dexterity + rollDice(6,1);
+					return (this.counterAttack + rollDice(4,1));
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -380,23 +503,30 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 107,
+				characterClass: "Jedi",
 				name: "Yoda",
-				hp: 200,
-				strength: 10,
-				dexterity: 10,
+				hp: 100,
+				strength: 5,
+				dexterity: 5,
 				attack: 2,
 				defend: 5,
-				armor: 0,
+				armorClass: 10,
 				counterAttack: 2,
 				xpModifier: 2,
+				getAttackRoll: function() {
+					return (rollDice(20,1) + this.strength + this.attack);
+				},
+				getComboHits: function() {
+					return 1;
+				},
 				getAttackPower: function() {
-    				return this.strength * this.attack;
+    				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return ((this.dexterity * this.defend) + this.armor);
+    				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return this.attack + this.dexterity + rollDice(6,1);
+					return (this.counterAttack + rollDice(4,1));
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -409,23 +539,30 @@ $(document).ready(function()
 		{ //https://en.wikipedia.org/wiki/Ewok; https://en.wikipedia.org/wiki/Wicket_W._Warrick
 			player =  {
 				id: 108,
+				characterClass: "Warrior",
 				name: "Wicket W. Warrick",
-				hp: 200,
-				strength: 10,
-				dexterity: 10,
+				hp: 100,
+				strength: 5,
+				dexterity: 5,
 				attack: 2,
 				defend: 5,
-				armor: 0,
+				armorClass: 10,
 				counterAttack: 2,
 				xpModifier: 2,
+				getAttackRoll: function() {
+					return (rollDice(20,1) + this.strength + this.attack);
+				},
+				getComboHits: function() {
+					return rollDice(4,1);
+				},
 				getAttackPower: function() {
-    				return this.strength * this.attack;
+    				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return ((this.dexterity * this.defend) + this.armor);
+    				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return this.attack + this.dexterity + rollDice(6,1);
+					return (this.counterAttack + rollDice(4,1));
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -436,10 +573,371 @@ $(document).ready(function()
 		}
 		else
 		{
-			console.log("Unexpected character selected!");
+			console.log("Unexpected HERO selected!");
 		}
 	}
 
+function setOpponentCharacter(theCharacter)
+{
+	console.log("getOpponentCharacter("+theCharacter+")");
+
+	if (theCharacter === "Stormtrooper")
+	{
+		opponent =  {
+			id: 210,
+			characterClass: "Marksman",
+			name: "Stormtrooper",
+			hp: 100,
+			strength: 5,
+			dexterity: 7,
+			attack: 4,
+			defend: 5,
+			armorClass: 15,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.dexterity + this.attack);
+			},
+			getComboHits: function() {
+				return 1;
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.dexterity);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Sandtrooper")
+	{
+		opponent =  {
+			id: 209,
+			characterClass: "Marksman",
+			name: "Sandtrooper",
+			hp: 80,
+			strength: 2,
+			dexterity: 5,
+			attack: 2,
+			defend: 5,
+			armorClass: 15,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.dexterity + this.attack);
+			},
+			getComboHits: function() {
+				return 1;
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.dexterity);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Tusken Raider")
+	{
+		opponent =  {
+			id: 208,
+			characterClass: "Outlaw",
+			name: "Tusken Raider",
+			hp: 50,
+			strength: 2,
+			dexterity: 2,
+			attack: 1,
+			defend: 2,
+			armorClass: 10,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.strength + this.attack);
+			},
+			getComboHits: function() {
+				return rollDice(4,1);
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.strength);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Gamorrean")
+	{
+		opponent =  {
+			id: 207,
+			characterClass: "Outlaw",
+			name: "Gamorrean Guard",
+			hp: 100,
+			strength: 7,
+			dexterity: 5,
+			attack: 4,
+			defend: 5,
+			armorClass: 12,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.strength + this.attack);
+			},
+			getComboHits: function() {
+				return rollDice(4,1);
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.dexterity);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Imperial Guard")
+	{
+		opponent =  {
+			id: 206,
+			characterClass: "Sentinel",
+			name: "Imperial Guard",
+			hp: 100,
+			strength: 10,
+			dexterity: 5,
+			attack: 5,
+			defend: 5,
+			armorClass: 18,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.strength + this.attack);
+			},
+			getComboHits: function() {
+				return rollDice(4,1);
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.strength);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Greedo")
+	{
+		opponent =  {
+			id: 205,
+			characterClass: "Outlaw",
+			name: "Greedo",
+			hp: 100,
+			strength: 2,
+			dexterity: 5,
+			attack: 3,
+			defend: 5,
+			armorClass: 10,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.dexterity + this.attack);
+			},
+			getComboHits: function() {
+				return 1;
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.dexterity);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Bossk")
+	{
+		opponent =  {
+			id: 204,
+			characterClass: "Bounty Hunter",
+			name: "Bossk",
+			hp: 100,
+			strength: 5,
+			dexterity: 7,
+			attack: 5,
+			defend: 5,
+			armorClass: 12,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.dexterity + this.attack);
+			},
+			getComboHits: function() {
+				return 1;
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.dexterity);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "IG-88")
+	{ 
+		opponent =  {
+			id: 203,
+			characterClass: "Bounty Hunter",
+			name: "IG-88",
+			hp: 100,
+			strength: 5,
+			dexterity: 5,
+			attack: 2,
+			defend: 5,
+			armorClass: 15,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.dexterity + this.attack);
+			},
+			getComboHits: function() {
+				return 1;
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.dexterity);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Boba Fett")
+	{ 
+		opponent =  {
+			id: 202,
+			characterClass: "Bounty Hunter",
+			name: "Boba Fett",
+			hp: 100,
+			strength: 5,
+			dexterity: 10,
+			attack: 8,
+			defend: 5,
+			armorClass: 15,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.dexterity + this.attack);
+			},
+			getComboHits: function() {
+				return rollDice(4,1);
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.dexterity);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Darth Vader")
+	{ 
+		opponent =  {
+			id: 201,
+			characterClass: "Sith",
+			name: "Darth Vader",
+			hp: 100,
+			strength: 5,
+			dexterity: 5,
+			attack: 2,
+			defend: 5,
+			armorClass: 18,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.strength + this.attack);
+			},
+			getComboHits: function() {
+				return 1;
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.strength);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else if (theCharacter === "Palpatine")
+	{ 
+		opponent =  {
+			id: 200,
+			characterClass: "Sith",
+			name: "Emperor Palpatine",
+			hp: 100,
+			strength: 5,
+			dexterity: 10,
+			attack: 5,
+			defend: 5,
+			armorClass: 10,
+			counterAttack: 2,
+			getAttackRoll: function() {
+				return (rollDice(20,1) + this.dexterity + this.attack);
+			},
+			getComboHits: function() {
+				return rollDice(4,1);
+			},
+			getAttackPower: function() {
+    			return (rollDice(20,1) + this.dexterity);
+    		},
+			getDefenseRating: function() {
+				return (this.dexterity + this.armorClass);
+			},
+			getCounterAttackPower: function() {
+				return (this.counterAttack + rollDice(4,1));
+			}
+		};
+	}
+	else
+	{
+		console.log("Unexpected VILLIAN selected!");
+	}
+}
+
+function EmptyCharacter()
+{
+	this.id = 0;
+	this.characterClass = "";
+	this.name = "";
+	this.hp = 0;
+	this.strength = 0;
+	this.dexterity = 0;
+	this.attack = 0;
+	this.defend = 0;
+	this.armorClass = 0;
+	this.counterAttack = 0;
+	this.getAttackRoll = function(){};
+	this.getComboHits = function(){};
+	this.getAttackPower = function(){};
+	this.getDefenseRating = function(){};
+	this.getCounterAttackPower = function(){};
+	this.getCounterAttackPower = function(){};
+}
+
+/* For story mode
 	function setOpponents()
 	{
 		var arrayOfCharacters = [];
@@ -454,16 +952,16 @@ $(document).ready(function()
 			dexterity: 10,
 			attack: 2,
 			defend: 5,
-			armor: 0,
+			armorClass: 10,
 			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return ((this.dexterity * this.defend) + this.armor);
+				return ((this.dexterity * this.defend) + this.armorClass);
 			},
 			getCounterAttackPower: function() {
-				return this.counterAttack + this.dexterity + rollDice(6,1);
+				return (this.counterAttack + rollDice(4,1));
 			}
 		};
 
@@ -475,16 +973,16 @@ $(document).ready(function()
 			dexterity: 10,
 			attack: 2,
 			defend: 5,
-			armor: 5,
+			armorClass: 10,
 			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return ((this.dexterity * this.defend) + this.armor);
+				return ((this.dexterity * this.defend) + this.armorClass);
 			},
 			getCounterAttackPower: function() {
-				return this.counterAttack + this.dexterity + rollDice(6,1);
+				return (this.counterAttack + rollDice(4,1));
 			}
 		};
 
@@ -496,16 +994,16 @@ $(document).ready(function()
 			dexterity: 10,
 			attack: 2,
 			defend: 5,
-			armor: 8,
+			armorClass: 10,
 			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return ((this.dexterity * this.defend) + this.armor);
+				return ((this.dexterity * this.defend) + this.armorClass);
 			},
 			getCounterAttackPower: function() {
-				return this.counterAttack + this.dexterity + rollDice(6,1);
+				return (this.counterAttack + rollDice(4,1));
 			}
 		};
 
@@ -517,16 +1015,16 @@ $(document).ready(function()
 			dexterity: 10,
 			attack: 2,
 			defend: 5,
-			armor: 10,
+			armorClass: 10,
 			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return ((this.dexterity * this.defend) + this.armor);
+				return ((this.dexterity * this.defend) + this.armorClass);
 			},
 			getCounterAttackPower: function() {
-				return this.counterAttack + this.dexterity + rollDice(6,1);
+				return (this.counterAttack + rollDice(4,1));
 			}
 		};
 
@@ -538,13 +1036,13 @@ $(document).ready(function()
 			dexterity: 10,
 			attack: 2,
 			defend: 5,
-			armor: 15,
+			armorClass: 10,
 			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return ((this.dexterity * this.defend) + this.armor);
+				return ((this.dexterity * this.defend) + this.armorClass);
 			},
 			getCounterAttackPower: function() {
 				return this.counterAttack+ this.dexterity + rollDice(6,1);
@@ -559,16 +1057,16 @@ $(document).ready(function()
 			dexterity: 10,
 			attack: 2,
 			defend: 5,
-			armor: 0,
+			armorClass: 10,
 			counterAttack: 2,
 			getAttackPower: function() {
 				return this.strength * this.attack;
 			},
 			getDefenseRating: function() {
-				return ((this.dexterity * this.defend) + this.armor);
+				return ((this.dexterity * this.defend) + this.armorClass);
 			},
 			getCounterAttackPower: function() {
-				return this.counterAttack + this.dexterity + rollDice(6,1);
+				return (this.counterAttack + rollDice(4,1));
 			}
 		};
 
@@ -602,24 +1100,6 @@ $(document).ready(function()
 		var imperialGuard_03 = new ImperialGuard(230, "Imperial Guard", 200, 10, 10, 2, 5);
 
 		// add characters to array
-
-		/* simple game
-		arrayOfCharacters.push(tuskenRaider_01);
-		arrayOfCharacters.push(sandtrooper_01);
-		arrayOfCharacters.push(greedo);
-		arrayOfCharacters.push(stormtrooper_01);
-		arrayOfCharacters.push(bossk);
-		arrayOfCharacters.push(ig88);
-		arrayOfCharacters.push(gamorrean_01);
-		arrayOfCharacters.push(bobaFett);
-		arrayOfCharacters.push(imperialGuard_01);
-    	arrayOfCharacters.push(darthVader);
-    	arrayOfCharacters.push(palpatine);*/
-
-		/* want to have player fight some characters multiple times,
-			becasue there are more than just one tuskan raider, stormtooper, sandtrooper, gamorrean, and imperial guard.
-			This would help weaker characters to build some stats before they get to harder fights.
-			The problem is that I would need some way to identify where I am at in the array, and that is hard without unique values.*/
 
 		arrayOfCharacters.push(tuskenRaider_01);
 		arrayOfCharacters.push(sandtrooper_01);
@@ -668,7 +1148,7 @@ $(document).ready(function()
 		this.dexterity = theDexterity;
 		this.attack = theAttack;
 		this.defend = theDefend;
-		this.armor = 2;		
+		this.armorClass = 10;		
 		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
@@ -676,11 +1156,11 @@ $(document).ready(function()
 		};
 
 		this.getDefenseRating = function() {
-			return ((this.dexterity * this.defend) + this.armor);
+			return ((this.dexterity * this.defend) + this.armorClass);
 		};
 
 		this.getCounterAttackPower = function(){
-			return this.counterAttack + this.dexterity + rollDice(6,1);
+			return (this.counterAttack + rollDice(4,1));
 		};
 	}
 
@@ -693,7 +1173,7 @@ $(document).ready(function()
 		this.dexterity = theDexterity;
 		this.attack = theAttack;
 		this.defend = theDefend;
-		this.armor = 5;
+		this.armorClass = 10;
 		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
@@ -701,11 +1181,11 @@ $(document).ready(function()
 		};
 
 		this.getDefenseRating = function() {
-			return ((this.dexterity * this.defend) + this.armor);
+			return ((this.dexterity * this.defend) + this.armorClass);
 		};
 
 		this.getCounterAttackPower = function(){
-			return this.counterAttack + this.dexterity + rollDice(6,1);
+			return (this.counterAttack + rollDice(4,1));
 		};
 	}
 
@@ -718,7 +1198,7 @@ $(document).ready(function()
 		this.dexterity = theDexterity;
 		this.attack = theAttack;
 		this.defend = theDefend;
-		this.armor = 6;
+		this.armorClass = 10;
 		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
@@ -726,11 +1206,11 @@ $(document).ready(function()
 		};
 
 		this.getDefenseRating = function() {
-			return ((this.dexterity * this.defend) + this.armor);
+			return ((this.dexterity * this.defend) + this.armorClass);
 		};
 
 		this.getCounterAttackPower = function(){
-			return this.counterAttack + this.dexterity + rollDice(6,1);
+			return (this.counterAttack + rollDice(4,1));
 		};
 	}
 
@@ -743,7 +1223,7 @@ $(document).ready(function()
 		this.dexterity = theDexterity;
 		this.attack = theAttack;
 		this.defend = theDefend;
-		this.armor = 7;
+		this.armorClass = 10;
 		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
@@ -751,11 +1231,11 @@ $(document).ready(function()
 		};
 
 		this.getDefenseRating = function() {
-			return ((this.dexterity * this.defend) + this.armor);
+			return ((this.dexterity * this.defend) + this.armorClass);
 		};
 
 		this.getCounterAttackPower = function(){
-			return this.counterAttack + this.dexterity + rollDice(6,1);
+			return (this.counterAttack + rollDice(4,1));
 		};
 	}
 
@@ -768,7 +1248,7 @@ $(document).ready(function()
 		this.dexterity = theDexterity;
 		this.attack = theAttack;
 		this.defend = theDefend;
-		this.armor = 10;
+		this.armorClass = 10;
 		this.counterAttack = 2;
 
 		this.getAttackPower = function() {
@@ -776,13 +1256,14 @@ $(document).ready(function()
 		};
 
 		this.getDefenseRating = function() {
-			return ((this.dexterity * this.defend) + this.armor);
+			return ((this.dexterity * this.defend) + this.armorClass);
 		};
 
 		this.getCounterAttackPower = function(){
-			return this.counterAttack + this.dexterity + rollDice(6,1);
+			return (this.counterAttack + rollDice(4,1));
 		};
 	}
+	*/
 
 });
 
