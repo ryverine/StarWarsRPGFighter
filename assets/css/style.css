@@ -3,10 +3,18 @@ Select all spans that are immediate children of buttons
 From calculator
 */
 
+/* ELEMENT */
+
 button > span {
     font-size: 20px;
     font-weight: bolder;
 }
+
+
+
+/* CLASS */
+
+
 
 .btn-primary{
 	margin: 2px;
@@ -30,3 +38,59 @@ button > span {
 	font-size: 20px;
 }
 
+.heroCharacter{
+	margin: 2px;
+	padding: 5px;
+}
+
+.heroCharacter:hover{
+	background-color: lime;
+}
+
+.villainCharacter{
+	margin: 2px;
+	padding: 5px;
+}
+
+.villainCharacter:hover{
+	background-color: red;
+}
+
+
+/* ID */
+
+#villainSelectionArea{
+	display: none;
+}
+
+#battleGround{
+	display: none;
+}
+
+#fightDataArea{
+	display: none;
+}
+
+#battleComplete{
+	display: none;
+	padding: 5px;
+	text-align: center;
+	color: white;
+	font-size: 30px;
+	font-weight: bold;
+}
+
+#heroMouseOverOutput{
+	margin: 2px;
+	color: #343a40;
+	font-size: 30px;
+	font-weight: bold;
+}
+
+
+#villainMouseOverOutput{
+	margin: 2px;
+	color: #343a40;
+	font-size: 30px;
+	font-weight: bold;
+}

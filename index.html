@@ -27,66 +27,95 @@
 <div class="container">
 
     <!-- CHARACTERS -->
-    <div class="row">
+    <div class="row" id="heroSelectionArea">
       <!-- HEROES -->
-      <div class="col-xs-6">
+      <div class="col-xs-12">
         <div class="card">
           <div class="card-header">
-            <h3>The Rebel Alliance</h3>
-            <h5>Click to select your HERO!</h5>
+            <h3>Click to select your HERO!</h3>
           </div>
 
-          <div class="card-body">
-            <button id="btn-luke" class="btn btn-primary heroCharacter" value="Luke"><span>Luke</span></button>
-            <button id="btn-chewbacca" class="btn btn-primary heroCharacter" value="Chewbacca"><span>Chewbacca</span></button>
-            <br>
-            <button id="btn-han" class="btn btn-primary heroCharacter" value="Han"><span>Han</span></button>
-            <button id="btn-obiwan" class="btn btn-primary heroCharacter" value="Obi-Wan"><span>Obi-Wan</span></button>
-            <br>
-            <button id="btn-leia" class="btn btn-primary heroCharacter" value="Leia"><span>Leia</span></button>
-            <button id="btn-lando" class="btn btn-primary heroCharacter" value="Lando"><span>Lando</span></button>
-            <br>
-            <button id="btn-yoda" class="btn btn-primary heroCharacter" value="Yoda"><span>Yoda</span></button>
-            <button id="btn-wicket" class="btn btn-primary heroCharacter" value="Wicket"><span>Wicket</span></button>
+          <div class="card-body bg-secondary">
+
+            <button id="btn-lukeskywalker" class="btn btn-dark heroCharacter" value="Luke Skywalker"><span><img src="assets/images/icons/luke.png"></span></button>
+            <button id="btn-chewbacca" class="btn btn-dark heroCharacter" value="Chewbacca"><img src="assets/images/icons/chewbacca.png"></button>
+         
+            <button id="btn-hansolo" class="btn btn-dark heroCharacter" value="Han Solo"><img src="assets/images/icons/han.png"></button>
+            <button id="btn-obi-wankenobi" class="btn btn-dark heroCharacter" value="Obi-Wan Kenobi"><img src="assets/images/icons/obi-wan.png"></button>
+          
+            <button id="btn-leiaorgana" class="btn btn-dark heroCharacter" value="Leia Organa"><img src="assets/images/icons/leia.png"></button>
+            <button id="btn-landocalrissian" class="btn btn-dark heroCharacter" value="Lando Calrissian"><img src="assets/images/icons/lando.png"></button>
+        
+            <button id="btn-yoda" class="btn btn-dark heroCharacter" value="Yoda"><img src="assets/images/icons/yoda.png"></button>
+            <button id="btn-wicket" class="btn btn-dark heroCharacter" value="Wicket"><img src="assets/images/icons/wicket.png"></button>
+
           </div>
+
+          <div class="card-footer text-center">
+            <span id="heroMouseOverOutput"></span>
+          </div>
+
         </div>
       </div>
+    </div> <!-- /row -->
+
 
       <!-- VILLANS -->
-      <div class="col-xs-6">
+    <div class="row" id="villainSelectionArea">
+      <div class="col-xs-12">
         <div class="card">
-          <div class="card-header">
-            <h3>The Galactic Empire</h3>
-            <h5>Click to select a VILLIAN!</h5>
+          <div class="card-header text-right">
+            <h3>Click to select a villain!</h3>
           </div>
 
-          <div class="card-body">
+          <div class="card-body bg-dark">
 
-            <button id="btn-tuskenraider" class="btn btn-primary villianCharacter" value="Tusken Raider"><span>Tusken Raider</span></button>
-            <button id="btn-gamorrean" class="btn btn-primary villianCharacter" value="Gamorrean"><span>Gamorrean</span></button>
-            <button id="btn-sandtrooper" class="btn btn-primary villianCharacter" value="Sandtrooper"><span>Sandtrooper</span></button>
-            <br>
-            <button id="btn-greedo" class="btn btn-primary villianCharacter" value="Greedo"><span>Greedo</span></button>
-            <button id="btn-stormtrooper" class="btn btn-primary villianCharacter" value="Stormtrooper"><span>Stormtrooper</span></button>
-            <button id="btn-bossk" class="btn btn-primary villianCharacter" value="Bossk"><span>Bossk</span></button>
-            <br>
-            <button id="btn-ig88" class="btn btn-primary villianCharacter" value="IG-88"><span>IG-88</span></button>
-            <button id="btn-bobafett" class="btn btn-primary villianCharacter" value="Boba Fett"><span>Boba Fett</span></button>
-            <button id="btn-imperial" class="btn btn-primary villianCharacter" value="Imperial Guard"><span>Imperial Guard</span></button>
-            <br>
-            <button id="btn-darthvader" class="btn btn-primary villianCharacter" value="Darth Vader"><span>Darth Vader</span></button>
-            <button id="btn-palpatine" class="btn btn-primary villianCharacter" value="Palpatine"><span>Palpatine</span></button>
+            <button id="btn-tuskenraider" class="btn btn-secondary villainCharacter" value="Tusken Raider"><span><img src="assets/images/icons/tuskenraider.png"></span></button>
+            <button id="btn-gamorreanguard" class="btn btn-secondary villainCharacter" value="Gamorrean Guard"><span><img src="assets/images/icons/gamorrean.png"></span></button>
+            <button id="btn-sandtrooper" class="btn btn-secondary villainCharacter" value="Sandtrooper"><span><img src="assets/images/icons/sandtrooper.png"></span></button>
+         
+            <button id="btn-greedo" class="btn btn-secondary villainCharacter" value="Greedo"><span><img src="assets/images/icons/greedo.png"></span></button>
+            <button id="btn-stormtrooper" class="btn btn-secondary villainCharacter" value="Stormtrooper"><span><img src="assets/images/icons/stormtrooper.png"></span></button>
+            <button id="btn-bossk" class="btn btn-secondary villainCharacter" value="Bossk"><span><img src="assets/images/icons/bossk.png"></span></button>
+    
+            <button id="btn-ig-88" class="btn btn-secondary btn-secondary villainCharacter" value="IG-88"><span><img src="assets/images/icons/ig-88.png"></span></button>
+            <button id="btn-bobafett" class="btn btn-secondary villainCharacter" value="Boba Fett"><span><img src="assets/images/icons/bobafett.png"></span></button>
+            <button id="btn-imperialguard" class="btn btn-secondary villainCharacter" value="Imperial Guard"><span><img src="assets/images/icons/imperialguard.png"></span></button>
+        
+            <button id="btn-darthvader" class="btn btn-secondary villainCharacter" value="Darth Vader"><span><img src="assets/images/icons/darthvader.png"></span></button>
+            <button id="btn-emperorpalpatine" class="btn btn-secondary villainCharacter" value="Emperor Palpatine"><span><img src="assets/images/icons/palpatine.png"></span></button>
+          </div>
+
+          <div class="card-footer text-center">
+            <span id="villainMouseOverOutput"></span>
           </div>
         </div>
       </div>
     </div> <!-- /row -->
 
-    <div class="row">
+    <!-- <div class="row">
       <div class="col-xs-12 divider"></div>
-    </div> <!-- /row -->
+    </div> /row -->
 
+    <!-- 
+      New row here
+      div that displays img of winner and loser of round at either end.
+      text in the middle that says [winner] defeated [loser] 
+      under text there should be a continue button/next fight
+    -->
+    <div class="row bg-dark" id="battleComplete">
+        <div class="col-xs-12">
+          <div id="battleCompleteMessage">
+          </div>
+        </div>
+        <button id="btn-continue" class="btn btn-warning" value="Continue"><span>Continue</span></button>
+    </div>
+
+
+
+  
     <!-- BATTLE GROUND -->
-    <div class="row">
+    <div class="row" id="battleGround">
       <div class="col-xs-5">
         <div class="card">
           <div class="card-header">
@@ -113,22 +142,23 @@
       <div class="col-xs-5">
         <div class="card">
           <div class="card-header">
-            <div id="villianName" class="characterName">VILLIAN</div>
-            <div id="villianClass" class="characterClass">VILLIAN</div>
+            <div id="villainName" class="characterName">villain</div>
+            <div id="villainClass" class="characterClass">villain</div>
           </div>
-          <div id="villianArea" class="card-body"></div>
-          <div id="villianStats" class="card-footer text-muted">
-            Villian Stats
+          <div id="villainArea" class="card-body"></div>
+          <div id="villainStats" class="card-footer text-muted">
+            villain Stats
           </div>
         </div>
       </div>
     </div> <!-- /row -->
+    
 
-    <div class="row">
+    <!--<div class="row">
       <div class="col-xs-12 divider"></div>
-    </div> <!-- /row -->
+    </div>  /row -->
 
-    <div class="row">
+    <div class="row" id="fightDataArea">
       <div class="col-xs-5">
         <div class="card">
           <div class="card-header"><h3>Fight Events</h3></div>

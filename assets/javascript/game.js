@@ -1,13 +1,71 @@
 /*
 
+<!-- VILLANS -->
+Luke
+Chewbacca
+Han
+Obi-Wan
+Leia
+Lando
+Yoda
+Wicket
+
+
+<!-- VILLANS -->
+Tusken Raider
+Gamorrean
+Sandtrooper
+Greedo
+Stormtrooper
+Bossk
+IG-88
+Boba Fett
+Imperial Guard 
+Darth Vader
+Palpatine
+
+*/
+
+/*
+
+// Managing charater growth
+
+first idea:
+
+if a character is dex-based (dex is higher than str by default) dex should increase more than str
+Then the same for str characters, str will have potential to increae more.
+
+
+HP should use 
+d10 - heavy character: chewbacca
+d8 - moderate character: 
+d6 - weak character: wicket, leia, yoda
+
+
+
+https://roll20.net/compendium/dnd5e/Character%20Advancement#content
+
+https://5thsrd.org/rules/leveling_up/
+*/
+
+/*
+
+// how will defend button work
+
+action state: neutral, attack, defend
+
+attack proceeds defense, so character that selects attack will go first. If both choose attack then hero acts first.
 
 
 */
 
+
+
+
+
 // Don't do anything until the page loads.
 $(document).ready(function() 
 {
-
 	var gameOverFlag = false;
 
 	var player = new EmptyCharacter();
@@ -15,7 +73,15 @@ $(document).ready(function()
 
 	var playerBaseHealth = 0;
 
-	var fightEventsOutput = $("#fightEvents");
+	// the main areas of the page
+	var heroSelectionArea = $("#heroSelectionArea");
+	var villainSelectionArea = $("#villainSelectionArea");
+	var battleGround = $("#battleGround");
+	var fightDataArea = $("#fightDataArea");
+	var fightEvents = $("#fightEvents");
+	var battleOrder = $("#battleOrder");
+	var battleComplete = $("#battleComplete");
+	var battleCompleteMessage = $("#battleCompleteMessage");
 
 	// when player selects "story" gameMode
 	// var opponents = setOpponents(); 
@@ -24,12 +90,63 @@ $(document).ready(function()
 
 	var fightNumber = 0;
 	
-	// hero selected
-	$(".heroCharacter").on("click", function() {
+//look for mouse over to display character name as text
+//https://stackoverflow.com/questions/29760719/detect-onhover-jquery-or-css-event-with-js
+/*
+    	$("p").mouseover(function()
+    	{
+        	$("p").css("background-color", "yellow");
+    	});
 
+    	$("p").mouseout(function()
+    	{
+        	$("p").css("background-color", "lightgray");
+    	});
+*/
+
+	$(".heroCharacter").mouseover(function()
+    {
+    	if(player.name.length === 0)
+    	{
+    		var heroName = $(this).val();
+        	$("#heroMouseOverOutput").text(heroName);
+    	}	
+    });
+
+    $(".heroCharacter").mouseout(function()
+    {
+    	if(player.name.length === 0)
+    	{
+        	$("#heroMouseOverOutput").text("");
+        	//$("p").css("background-color", "lightgray");
+        }
+    });
+
+    $(".villainCharacter").mouseover(function()
+    {	
+    	if(opponent.name.length === 0)
+    	{
+    		var villainName = $(this).val();
+        	$("#villainMouseOverOutput").text(villainName);
+    	}
+    });
+
+
+    $(".villainCharacter").mouseout(function()
+    {
+    	if(opponent.name.length === 0)
+    	{
+       		$("#villainMouseOverOutput").text("");
+        	//.css("background-color", "lightgray");
+        }
+    });
+
+	// hero selected
+	$(".heroCharacter").on("click", function() 
+	{
 		if(!gameOverFlag)
 		{
-			fightEventsOutput.text("");// always make sure this is clear when new game/round starts
+			fightEvents.text("");// always make sure this is clear when new game/round starts
 
 			if(player.name.length > 0)
 			{
@@ -40,29 +157,38 @@ $(document).ready(function()
 				setPlayerCharacter($(this).val());
 				playerBaseHealth = player.hp;
 				logGameStats();
-				refreshBattleGround();
+				// hide ".heroCharacter" elements
+				heroSelectionArea.hide( 2000, function() {});
+				// show villains
+				villainSelectionArea.show( 2000, function() {});
+				//refreshBattleGround();
 			}
 		}
 	});
 
-	// villian selected
-	$(".villianCharacter").on("click", function()
+	// villain selected
+	$(".villainCharacter").on("click", function()
 	{
 		if(!gameOverFlag)
 		{
-			fightEventsOutput.text("");// always make sure this is clear when new game/round starts
+			fightEvents.text("");// always make sure this is clear when new game/round starts
 
 			if(opponent.name.length > 0)
 			{
-				console.log("Villian character already selected!");
+				console.log("villain character already selected!");
 			}
 			else
 			{
 				fightNumber++;
 				setOpponentCharacter($(this).val());
 				logGameStats();
+				//show battleGround
+				battleGround.show(2000, function(){});
+				//show fightDataArea
+				fightDataArea.show(2000, function(){});
 				refreshBattleGround();
-				$("#battleOrder").append("Round " + fightNumber + ": " + $(this).val() + "<br>");
+				fightEvents.text("");
+				battleOrder.append("Round " + fightNumber + ": " + $(this).val() + "<br>");
 			}
 		}
 	});
@@ -74,7 +200,7 @@ $(document).ready(function()
 		{
 			//console.log("ATTACK button clicked!");
 
-			//make sure we have a hero and a villian
+			//make sure we have a hero and a villain
 			if(player.name.length > 0 && opponent.name.length > 0)
 			{
 				attackAction(player,opponent);
@@ -84,24 +210,26 @@ $(document).ready(function()
 					opponent.hp = 0;
 					console.log(player.name + " defeated " + opponent.name + "!");
 				
-					fightEventsOutput.append(player.name + " defeated " + opponent.name + "!" + "<br>");
+					fightEvents.append(player.name + " defeated " + opponent.name + "!" + "<br>");
 				
 					// reset player health and level up
 					player.hp = playerBaseHealth;
 					player.levelUp();
 					playerBaseHealth = player.hp;
 
-					// reset villian so player can choose next fight
+					/*// reset villain so player can choose next fight
 					// put a "defeated" image on villain and prevent user from re-selecting?
 					opponent = new EmptyCharacter ();
 
-					refreshBattleGround();
+					refreshBattleGround();*/
 
-					setTimeout(startNextRound,1000);
+					//setTimeout(startNextRound,1000);
+					startNextRound();
 				}
 				else
 				{
 					attackAction(opponent,player);
+					//counterAttackAction(opponent,player);
 
 					if (player.hp <= 0) 
 					{
@@ -109,7 +237,7 @@ $(document).ready(function()
 
 						console.log(opponent.name + " defeated " + player.name + "!");
 
-						fightEventsOutput.append(opponent.name + " defeated " + player.name + "!" + "<br>");
+						fightEvents.append(opponent.name + " defeated " + player.name + "!" + "<br>");
 
 						refreshBattleGround();
 
@@ -119,7 +247,7 @@ $(document).ready(function()
 			}
 			else
 			{
-				console.log("Must select hero and villian character!");
+				console.log("Must select hero and villain character!");
 			}
 
 			refreshBattleGround();
@@ -145,8 +273,14 @@ $(document).ready(function()
 	});
 
 	function rollDice(dieType, numDie)
-	{
-		var roll = Math.floor((Math.random() * Math.floor(dieType)) + 1) * numDie;
+	{ //this would not work for percentage die, 
+		var roll = 0;
+
+		for(var i = 0; i < numDie; i++)
+		{
+			roll += Math.floor((Math.random() * Math.floor(dieType)) + 1);
+		}
+
 		return roll;
 	}
 
@@ -163,14 +297,14 @@ $(document).ready(function()
 		$("#heroStats").append("<br>" + "Defense: " + player.defend);
 		$("#heroStats").append("<br>" + "Armor: " + player.armorClass);
 
-		$("#villianName").text(opponent.name);
-		$("#villianClass").text(opponent.characterClass);
-		$("#villianStats").text("HP: " + opponent.hp);
-		$("#villianStats").append("<br>" + "Str: " + player.strength);
-		$("#villianStats").append("<br>" + "Dex: " + player.dexterity);
-		$("#villianStats").append("<br>" + "Attack: " + opponent.attack);
-		$("#villianStats").append("<br>" + "Defense: " + opponent.defend);
-		$("#villianStats").append("<br>" + "Armor: " + opponent.armorClass);
+		$("#villainName").text(opponent.name);
+		$("#villainClass").text(opponent.characterClass);
+		$("#villainStats").text("HP: " + opponent.hp);
+		$("#villainStats").append("<br>" + "Str: " + opponent.strength);
+		$("#villainStats").append("<br>" + "Dex: " + opponent.dexterity);
+		$("#villainStats").append("<br>" + "Attack: " + opponent.attack);
+		$("#villainStats").append("<br>" + "Defense: " + opponent.defend);
+		$("#villainStats").append("<br>" + "Armor: " + opponent.armorClass);
 	}
 
 	function attackAction(theAttacker, theAttacked)
@@ -185,55 +319,134 @@ $(document).ready(function()
 
 				theAttacked.hp = theAttacked.hp - damage;
 
-				fightEventsOutput.append(theAttacker.name + " attacks " + theAttacked.name + " for " + damage + " DMG points." + "<br>");
+				fightEvents.append(theAttacker.name + " attacks " + theAttacked.name + " for " + damage + " DMG points." + "<br>");
 			}
 			else
 			{
-				fightEventsOutput.append(theAttacker.name + " attack missed " + theAttacked.name + "<br>");
+				fightEvents.append(theAttacker.name + " attack missed " + theAttacked.name + "<br>");
 			}
 		}
 	}
 
 	function counterAttackAction(theAttacker, theAttacked)
 	{
+		// theAttacker counter attacks theAttacked
 		// this will be used once defend button is active
 		/*
-		var attackRoll = rollDice(20,1) + theAttacker.counterAttack;
-		// attack roll needs to be function of character, because dex or str can be a modifier
+		
+		Riposte: 
+		- Immediately after targeting opponent with attack, opponent can make one attack against attacker.
+		- Opponent can make a riposte a number of times equal to their Dexterity or Strength modifier, whichever is greater (a minimum of one use). 
+		*/
+		var attackerBonus = 0;
 
-		if(attackRoll >= theAttacked.armorClass)
+		if(theAttacker.strength > theAttacker.dexterity)
 		{
-			var damage = theAttacker.getCounterAttackPower();
-
-			theAttacked.hp = Math.abs(theAttacked.hp - damage);
-
-			fightEventsOutput.append(theAttacker.name + " counter attacks " + theAttacked.name + " for " + damage + " DMG points." + "<br>");
+			attackerBonus = theAttacker.strength;
 		}
 		else
 		{
-			fightEventsOutput.append(theAttacker.name + " counter attack missed " + theAttacked.name + "<br>");
+			attackerBonus = theAttacker.dexterity;
 		}
-		*/
+
+		// var counterAttackRoll = rollDice(20,1) + theAttacker.counterAttack;
+		// attack roll needs to be function of character, because dex or str can be a modifier
+
+		if(theAttacker.getAttackRoll() >= theAttacked.armorClass)
+		{
+			var damage = theAttacker.getAttackPower() + attackerBonus;//getCounterAttackPower();
+
+			theAttacked.hp = theAttacked.hp - damage;
+
+			fightEvents.append(theAttacker.name + " counter attacks " + theAttacked.name + " for " + damage + " DMG points." + "<br>");
+		}
+		else
+		{
+			fightEvents.append(theAttacker.name + " counter attack missed " + theAttacked.name + "<br>");
+		}
+		
+	}
+
+	function startNextRound()
+	{
+		console.log("startNextRound()");
+
+		battleCompleteMessage.text("");
+
+		// https://stackoverflow.com/questions/6205258/jquery-dynamically-create-button-and-attach-event-handler
+		// <button id="btn-luke" class="btn btn-dark heroCharacter" value="Luke"><span><img src="assets/images/icons/luke.png"></span></button>
+		// <button type="button" id="continueButton" class="btn btn-warning">Warning</button>
+
+		// http://api.jquery.com/attr/
+		// $( "#greatphoto" ).attr( "alt", "Beijing Brush Seller" );
+		//var continueBtn = $('<button>Continue</button>');
+		//continueBtn.attr("id", "continueButton" );
+		//continueBtn.attr("class", "btn btn-warning");
+		//battleCompleteMessage.append(continueBtn);
+		
+		battleComplete.show(2000, function(){});
+
+		battleCompleteMessage.append(player.name + " defeated " + opponent.name + "<br>" + "On to next fight!!!");
 	}
 
 
+	$("#btn-continue").on("click", function() 
+	{
+		fightEvents.text("");
+		// reset villain so player can choose next fight
+		// put a "defeated" image on villain and prevent user from re-selecting?
+
+		var buttonId = opponent.name.toLowerCase();
+		buttonId = buttonId.replace(/\s+/g, '');//regex
+		buttonId = "#btn-" + buttonId;
+		
+		opponent = new EmptyCharacter ();
+
+		refreshBattleGround();
+		battleCompleteMessage.text("");
+		battleComplete.hide(2000, function(){});
+
+		$(buttonId).hide(2000, function(){});
+	});
+
+
+	/*
 	function startNextRound()
 	{
 		console.log("startNextRound()");
 		alert("Select next villian for " + player.name + " to fight!");
 		fightEventsOutput.text("");
 	}
+	*/
+
+
 
 	function gameOver()
 	{
 		console.log("gameOver()");
 		var playAgain = confirm("GAME OVER" + "\n" + player.name + " was defeated by " + opponent.name + "!" + "\n" + "Would you like to play again?");
 
+		/*
+			Instead of this confirm i want to create a div-row to be placed above the "battleGround"
+			#battleCompleteMessage
+
+			three columns
+			[victory img of winner] [text stating who won and lost] [defeat image of loser]
+
+			under the text should be new game button and a quit button.
+		*/
+
 		if (playAgain)
 		{
-			// reset game
 			player = new EmptyCharacter();
 			opponent = new EmptyCharacter();
+			refreshBattleGround();
+			fightEvents.text("");
+			battleOrder.text("");
+			villainSelectionArea.hide();
+			battleGround.hide();
+			fightDataArea.hide();
+			heroSelectionArea.show( 2000, function() {});
 		}
 		else
 		{
@@ -282,8 +495,8 @@ $(document).ready(function()
 	function setPlayerCharacter(theCharacter)
 	{
 		console.log("getPlayerCharacter("+theCharacter+")");
-
-		if (theCharacter === "Luke")
+		theCharacter = theCharacter.toLowerCase();
+		if (theCharacter === "luke skywalker")
 		{
 			player =  {
 				id: 101,
@@ -292,7 +505,7 @@ $(document).ready(function()
 				hp: 100,
 				strength: 5,
 				dexterity: 5,
-				attack: 4, // proficiency with weapon
+				attack: 7, // proficiency with weapon
 				defend: 5, // 
 				armorClass: 12,
 				counterAttack: 2,
@@ -314,12 +527,12 @@ $(document).ready(function()
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
-					this.strength += rollDice(4,1) + this.xpModifier;
+					this.strength += rollDice(6,1) + this.xpModifier;
 					this.dexterity += rollDice(4,1) + this.xpModifier;
 				}
     		};
 		}
-		else if (theCharacter === "Chewbacca")
+		else if (theCharacter === "chewbacca")
 		{
 			player =  {
 				id: 102,
@@ -355,7 +568,7 @@ $(document).ready(function()
 				}
     		};
 		}
-		else if (theCharacter === "Han")
+		else if (theCharacter === "han solo")
 		{
 			player =  {
 				id: 103,
@@ -391,7 +604,7 @@ $(document).ready(function()
 				}
     		};
 		}
-		else if (theCharacter === "Obi-Wan")
+		else if (theCharacter === "obi-wan kenobi")
 		{
 			player =  {
 				id: 104,
@@ -400,7 +613,7 @@ $(document).ready(function()
 				hp: 100,
 				strength: 5,
 				dexterity: 5,
-				attack: 2,
+				attack: 10,
 				defend: 5,
 				armorClass: 10,
 				counterAttack: 2,
@@ -427,7 +640,7 @@ $(document).ready(function()
 				}
     		};
 		}
-		else if (theCharacter === "Leia")
+		else if (theCharacter === "leia organa")
 		{
 			player =  {
 				id: 105,
@@ -463,7 +676,7 @@ $(document).ready(function()
 				}
     		};
 		}
-		else if (theCharacter === "Lando")
+		else if (theCharacter === "lando calrissian")
 		{
 			player =  {
 				id: 106,
@@ -499,7 +712,7 @@ $(document).ready(function()
 				}
     		};
 		}
-		else if (theCharacter === "Yoda")
+		else if (theCharacter === "yoda")
 		{
 			player =  {
 				id: 107,
@@ -508,7 +721,7 @@ $(document).ready(function()
 				hp: 100,
 				strength: 5,
 				dexterity: 5,
-				attack: 2,
+				attack: 15,
 				defend: 5,
 				armorClass: 10,
 				counterAttack: 2,
@@ -535,12 +748,12 @@ $(document).ready(function()
 				}
     		};
 		}
-		else if (theCharacter === "Wicket")
+		else if (theCharacter === "wicket")
 		{ //https://en.wikipedia.org/wiki/Ewok; https://en.wikipedia.org/wiki/Wicket_W._Warrick
 			player =  {
 				id: 108,
 				characterClass: "Warrior",
-				name: "Wicket W. Warrick",
+				name: "Wicket", // Full name is Wicket W. Warrick
 				hp: 100,
 				strength: 5,
 				dexterity: 5,
@@ -580,8 +793,8 @@ $(document).ready(function()
 function setOpponentCharacter(theCharacter)
 {
 	console.log("getOpponentCharacter("+theCharacter+")");
-
-	if (theCharacter === "Stormtrooper")
+	theCharacter = theCharacter.toLowerCase();
+	if (theCharacter === "stormtrooper")
 	{
 		opponent =  {
 			id: 210,
@@ -611,7 +824,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Sandtrooper")
+	else if (theCharacter === "sandtrooper")
 	{
 		opponent =  {
 			id: 209,
@@ -641,7 +854,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Tusken Raider")
+	else if (theCharacter === "tusken raider")
 	{
 		opponent =  {
 			id: 208,
@@ -671,7 +884,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Gamorrean")
+	else if (theCharacter === "gamorrean guard")
 	{
 		opponent =  {
 			id: 207,
@@ -701,7 +914,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Imperial Guard")
+	else if (theCharacter === "imperial guard")
 	{
 		opponent =  {
 			id: 206,
@@ -731,7 +944,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Greedo")
+	else if (theCharacter === "greedo")
 	{
 		opponent =  {
 			id: 205,
@@ -761,7 +974,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Bossk")
+	else if (theCharacter === "bossk")
 	{
 		opponent =  {
 			id: 204,
@@ -791,7 +1004,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "IG-88")
+	else if (theCharacter === "ig-88")
 	{ 
 		opponent =  {
 			id: 203,
@@ -821,7 +1034,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Boba Fett")
+	else if (theCharacter === "boba fett")
 	{ 
 		opponent =  {
 			id: 202,
@@ -851,7 +1064,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Darth Vader")
+	else if (theCharacter === "darth vader")
 	{ 
 		opponent =  {
 			id: 201,
@@ -881,7 +1094,7 @@ function setOpponentCharacter(theCharacter)
 			}
 		};
 	}
-	else if (theCharacter === "Palpatine")
+	else if (theCharacter === "emperor palpatine")
 	{ 
 		opponent =  {
 			id: 200,
@@ -890,7 +1103,7 @@ function setOpponentCharacter(theCharacter)
 			hp: 100,
 			strength: 5,
 			dexterity: 10,
-			attack: 5,
+			attack: 15,
 			defend: 5,
 			armorClass: 10,
 			counterAttack: 2,
@@ -913,7 +1126,7 @@ function setOpponentCharacter(theCharacter)
 	}
 	else
 	{
-		console.log("Unexpected VILLIAN selected!");
+		console.log("Unexpected villain selected!");
 	}
 }
 
