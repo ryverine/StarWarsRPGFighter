@@ -56,7 +56,6 @@ button > span {
 	background-color: red;
 }
 
-
 /* ID */
 
 #villainSelectionArea{
@@ -87,10 +86,17 @@ button > span {
 	font-weight: bold;
 }
 
-
 #villainMouseOverOutput{
 	margin: 2px;
 	color: #343a40;
 	font-size: 30px;
 	font-weight: bold;
+}
+
+#btn-newgame{
+	display: none;
+}
+
+#btn-quit{
+	display: none;
 }

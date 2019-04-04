@@ -1,5 +1,12 @@
 /*
 
+D&D 5th Edition
+Compendium
+Weapons
+
+https://roll20.net/compendium/dnd5e/Weapons#content
+
+
 <!-- VILLANS -->
 Luke
 Chewbacca
@@ -25,6 +32,15 @@ Darth Vader
 Palpatine
 
 */
+
+							/*
+							Riposte: 
+							- Immediately after targeting opponent with attack, 
+							opponent can make one attack against attacker.
+							- Opponent can make a riposte a number of times equal to their Dexterity or Strength modifier, 
+							whichever is greater (a minimum of one use). 
+							*/
+
 
 /*
 
@@ -59,6 +75,21 @@ attack proceeds defense, so character that selects attack will go first. If both
 
 */
 
+/*
+Multi-attack
+https://rpg.stackexchange.com/questions/92044/can-a-creature-with-multiattack-make-more-than-one-attack-as-part-of-a-readied-a
+A creature that can make multiple attacks on its turn has the Multiattack ability. 
+A creature can’t use Multiattack when making an opportunity attack, which must be a single melee attack.
+
+Extra Attack
+https://merricb.com/2015/04/21/the-attack-action-extra-attacks-and-other-attacks/
+Extra Attack allows you to make one additional attack when you take the Attack action. 
+(You may also move between the two attacks). 
+Fighters gain the ability to gain two or three additional attacks at higher levels, 
+so a 20th level fighter is able to make 4 attacks when they take the Attack action.
+
+
+*/
 
 
 
@@ -90,20 +121,6 @@ $(document).ready(function()
 
 	var fightNumber = 0;
 	
-//look for mouse over to display character name as text
-//https://stackoverflow.com/questions/29760719/detect-onhover-jquery-or-css-event-with-js
-/*
-    	$("p").mouseover(function()
-    	{
-        	$("p").css("background-color", "yellow");
-    	});
-
-    	$("p").mouseout(function()
-    	{
-        	$("p").css("background-color", "lightgray");
-    	});
-*/
-
 	$(".heroCharacter").mouseover(function()
     {
     	if(player.name.length === 0)
@@ -198,51 +215,155 @@ $(document).ready(function()
 	{
 		if(!gameOverFlag)
 		{
-			//console.log("ATTACK button clicked!");
+			console.log("ATTACK button clicked!");
 
 			//make sure we have a hero and a villain
 			if(player.name.length > 0 && opponent.name.length > 0)
 			{
-				attackAction(player,opponent);
-				
-				if (opponent.hp <= 0) //player defeated opponent
+				player.actionState = "attack";
+
+				opponent.setActionState();
+
+				if(opponent.actionState.toLowerCase() === 'attack')
 				{
-					opponent.hp = 0;
-					console.log(player.name + " defeated " + opponent.name + "!");
-				
-					fightEvents.append(player.name + " defeated " + opponent.name + "!" + "<br>");
-				
-					// reset player health and level up
-					player.hp = playerBaseHealth;
-					player.levelUp();
-					playerBaseHealth = player.hp;
+					// determines who goes first
+					var firstAttacker = rollForInitiative(player.name.toLowerCase(), opponent.name.toLowerCase());
 
-					/*// reset villain so player can choose next fight
-					// put a "defeated" image on villain and prevent user from re-selecting?
-					opponent = new EmptyCharacter ();
+					if (firstAttacker === player.name.toLowerCase())
+					{
+						//player attacks first
+						var playerDmgToOpponent01 = doAttackAction(player, opponent);
 
-					refreshBattleGround();*/
+						opponent.hp = opponent.hp - playerDmgToOpponent01;
 
-					//setTimeout(startNextRound,1000);
-					startNextRound();
+						if (opponent.hp <= 0)
+						{
+							opponent.hp = 0;
+
+
+
+							player.hp = playerBaseHealth;
+							player.levelUp();
+							playerBaseHealth = player.hp;
+
+
+
+							refreshBattleGround();
+							startNextRound();
+						}
+						else
+						{
+							//now opponent attacks
+
+							var opponentDmgToPlayer01 = doAttackAction(opponent, player);
+
+							player.hp = player.hp - opponentDmgToPlayer01;
+
+							if (player.hp <= 0)
+							{
+								player.hp = 0;
+								refreshBattleGround();
+								gameOver();
+							}
+							else
+							{
+								refreshBattleGround();
+							}
+						}
+					}
+					else
+					{
+						//opponent attacks first
+
+						var opponentDmgToPlayer02 = doAttackAction(opponent, player);
+
+						player.hp = player.hp - opponentDmgToPlayer02;
+
+						if (player.hp <= 0)
+						{
+							player.hp = 0;
+							refreshBattleGround();
+							gameOver();
+						}
+						else
+						{
+							// now player attacks
+							var playerDmgToOpponent02 = doAttackAction(player, opponent);
+
+							opponent.hp = opponent.hp - playerDmgToOpponent02;
+
+							if (opponent.hp <= 0)
+							{
+								opponent.hp = 0;
+								player.hp = playerBaseHealth;
+								player.levelUp();
+								playerBaseHealth = player.hp;
+								refreshBattleGround();
+								startNextRound();
+							}
+							else
+							{
+								refreshBattleGround();
+							}
+						}
+					}
+				}
+				else if (opponent.actionState.toLowerCase() === 'defend')
+				{
+					fightEvents.append(opponent.name + " defends!" + "<br>");
+
+					// player attacks
+					var playerDmgToOpponent03 = doAttackAction(player, opponent);
+
+					opponent.hp = opponent.hp - playerDmgToOpponent03;
+
+					if (opponent.hp <= 0)
+					{
+						opponent.hp = 0;
+						player.hp = playerBaseHealth;
+						player.levelUp();
+						playerBaseHealth = player.hp;
+						refreshBattleGround();
+						startNextRound();
+					}
+					else
+					{
+						// does opponent counter attack
+						if (opponent.counterAttackRoll())
+						{
+							var opponentCounterAttack = opponent.getCounterAttackPower();
+
+							fightEvents.append(opponent.name + " counter attacks " + player.name + " for " + opponentCounterAttack + " points." + "<br>");
+
+							var counterDmgPercent = player.getDefenseRating() / 100;
+							var counterDmgReduction = Math.floor(opponentCounterAttack * counterDmgPercent);
+
+							fightEvents.append(player.name + " damage reduced by " + counterDmgReduction + " points." + "<br>");
+
+							opponentCounterAttack = Math.floor(opponentCounterAttack - counterDmgReduction);
+
+							player.hp = player.hp - opponentCounterAttack;
+
+							if (player.hp <= 0)
+							{
+								player.hp = 0;
+								refreshBattleGround();
+								gameOver();
+							}
+							else
+							{
+								refreshBattleGround();
+							}
+						}
+						else
+						{
+							fightEvents.append(opponent.name + " fails to counter attack " + player.name + "!" + "<br>");
+						}
+					}
 				}
 				else
 				{
-					attackAction(opponent,player);
-					//counterAttackAction(opponent,player);
-
-					if (player.hp <= 0) 
-					{
-						player.hp = 0;
-
-						console.log(opponent.name + " defeated " + player.name + "!");
-
-						fightEvents.append(opponent.name + " defeated " + player.name + "!" + "<br>");
-
-						refreshBattleGround();
-
-						setTimeout(gameOver,1000);
-					}
+					console.log("Player attacked, but Opponent is in unexpected action state.")
 				}
 			}
 			else
@@ -250,26 +371,132 @@ $(document).ready(function()
 				console.log("Must select hero and villain character!");
 			}
 
+			player.actionState = "neutral";
+			player.opponentState = "neutral";
 			refreshBattleGround();
 		}
 	});
+
+	function doAttackAction(theAttacker, theAttacked)
+	{
+		var attackerComboHits = theAttacker.getComboHits();
+		var totalDmg = 0;
+
+		for(var i = 0; i < attackerComboHits; i++)
+		{
+			if(theAttacker.getAttackRoll() >= theAttacked.armorClass)
+			{
+				var damage = theAttacker.getAttackPower();
+
+				totalDmg  += damage;
+
+				fightEvents.append(theAttacker.name + " attacks " + theAttacked.name + " for " + damage + " points." + "<br>");
+			}
+			else
+			{
+				fightEvents.append(theAttacker.name + " attack missed " + theAttacked.name + "!" + "<br>");
+			}
+		}
+
+		var attackedDmgReductionPercent = theAttacked.getDefenseRating() / 100;
+
+		var attackedDmgReduction = Math.floor(totalDmg * attackedDmgReductionPercent);
+	
+		fightEvents.append(theAttacked.name + " damage reduced by " + attackedDmgReduction + " points."  + "<br>");
+
+		totalDmg = Math.floor(totalDmg - attackedDmgReduction);
+
+		return totalDmg;
+	}
 
 	//defend button onclick
 	$("#btn-defend").on("click", function() 
 	{
 		if(!gameOverFlag)
 		{
-			//console.log("DEFEND button clicked!");
+			console.log("DEFEND button clicked!");
 
 			if(player.name.length > 0 && opponent.name.length > 0)
 			{
-				//nothing yet
+				player.actionState = "defend";
+
+				fightEvents.append(player.name + " defends!" + "<br>");
+
+				opponent.setActionState();
+
+				if(opponent.actionState.toLowerCase() === 'defend')
+				{
+					fightEvents.append(player.name + " and " + opponent.name + " stand their ground." + "<br>");
+				}
+				else if(opponent.actionState.toLowerCase() === 'attack')
+				{
+					// calculate damage done to player
+					var opponentAttack = doAttackAction(opponent,player);
+
+					player.hp = player.hp - opponentAttack;
+
+					//did player die?
+					if (player.hp <= 0)
+					{
+						player.hp = 0;
+						refreshBattleGround();
+						gameOver();
+					}
+					else
+					{
+						if (player.counterAttackRoll())
+						{
+							var counterDmg = player.getCounterAttackPower();
+
+							fightEvents.append(player.name + " counter attacks " + opponent.name + " for " + counterDmg + " points." + "<br>");
+
+							var opponentDmgPercent = opponent.getDefenseRating() / 100;
+
+							var opponentDmgReduction = Math.floor(counterDmg * opponentDmgPercent);
+
+							fightEvents.append(opponent.name + " damage reduced by " + opponentDmgReduction + " points." + "<br>");
+
+							counterDmg = Math.floor(counterDmg - opponentDmgReduction);
+
+							opponent.hp = opponent.hp - counterDmg;
+
+							if (opponent.hp <= 0)
+							{
+								opponent.hp = 0;
+								player.hp = playerBaseHealth;
+								player.levelUp();
+								playerBaseHealth = player.hp;
+								refreshBattleGround();
+								startNextRound();
+							}
+						}
+						else
+						{
+							fightEvents.append(player.name + " fails to counter attack " + opponent.name + "!" + "<br>");
+						}
+
+						refreshBattleGround();
+					}
+				}
+				else
+				{
+					console.log("Player defended, but Opponent is in unexpected action state.")
+				}
+
+				player.actionState = "neutral";
+				opponent.actionState = "neutral";
 			}
 			else
 			{
 				console.log("No player character selected!");
 			}
+
+			player.actionState = "neutral";
+			opponent.actionState = "neutral";
+
+			refreshBattleGround();
 		}
+
 	});
 
 	function rollDice(dieType, numDie)
@@ -282,6 +509,28 @@ $(document).ready(function()
 		}
 
 		return roll;
+	}
+
+	function rollForInitiative(rollerOne, rollerTwo)
+	{
+		rollerOne = rollerOne.toLowerCase();
+		rollerTwo = rollerTwo.toLowerCase();
+
+		var rollOne = rollDice(20,1);
+		var rollTwo = rollDice(20,1);
+
+		if(rollOne > rollTwo)
+		{
+			return rollerOne;
+		}
+		else if (rollTwo > rollOne)
+		{
+			return rollerTwo;
+		}
+		else
+		{
+			rollForInitiative(rollerOne, rollerTwo);
+		}
 	}
 
 	function refreshBattleGround()
@@ -317,6 +566,8 @@ $(document).ready(function()
 			{
 				var damage = theAttacker.getAttackPower();
 
+				totalDmg += damage;
+
 				theAttacked.hp = theAttacked.hp - damage;
 
 				fightEvents.append(theAttacker.name + " attacks " + theAttacked.name + " for " + damage + " DMG points." + "<br>");
@@ -328,73 +579,20 @@ $(document).ready(function()
 		}
 	}
 
-	function counterAttackAction(theAttacker, theAttacked)
-	{
-		// theAttacker counter attacks theAttacked
-		// this will be used once defend button is active
-		/*
-		
-		Riposte: 
-		- Immediately after targeting opponent with attack, opponent can make one attack against attacker.
-		- Opponent can make a riposte a number of times equal to their Dexterity or Strength modifier, whichever is greater (a minimum of one use). 
-		*/
-		var attackerBonus = 0;
-
-		if(theAttacker.strength > theAttacker.dexterity)
-		{
-			attackerBonus = theAttacker.strength;
-		}
-		else
-		{
-			attackerBonus = theAttacker.dexterity;
-		}
-
-		// var counterAttackRoll = rollDice(20,1) + theAttacker.counterAttack;
-		// attack roll needs to be function of character, because dex or str can be a modifier
-
-		if(theAttacker.getAttackRoll() >= theAttacked.armorClass)
-		{
-			var damage = theAttacker.getAttackPower() + attackerBonus;//getCounterAttackPower();
-
-			theAttacked.hp = theAttacked.hp - damage;
-
-			fightEvents.append(theAttacker.name + " counter attacks " + theAttacked.name + " for " + damage + " DMG points." + "<br>");
-		}
-		else
-		{
-			fightEvents.append(theAttacker.name + " counter attack missed " + theAttacked.name + "<br>");
-		}
-		
-	}
-
 	function startNextRound()
 	{
 		console.log("startNextRound()");
 
 		battleCompleteMessage.text("");
-
-		// https://stackoverflow.com/questions/6205258/jquery-dynamically-create-button-and-attach-event-handler
-		// <button id="btn-luke" class="btn btn-dark heroCharacter" value="Luke"><span><img src="assets/images/icons/luke.png"></span></button>
-		// <button type="button" id="continueButton" class="btn btn-warning">Warning</button>
-
-		// http://api.jquery.com/attr/
-		// $( "#greatphoto" ).attr( "alt", "Beijing Brush Seller" );
-		//var continueBtn = $('<button>Continue</button>');
-		//continueBtn.attr("id", "continueButton" );
-		//continueBtn.attr("class", "btn btn-warning");
-		//battleCompleteMessage.append(continueBtn);
 		
 		battleComplete.show(2000, function(){});
 
 		battleCompleteMessage.append(player.name + " defeated " + opponent.name + "<br>" + "On to next fight!!!");
 	}
 
-
 	$("#btn-continue").on("click", function() 
 	{
 		fightEvents.text("");
-		// reset villain so player can choose next fight
-		// put a "defeated" image on villain and prevent user from re-selecting?
 
 		var buttonId = opponent.name.toLowerCase();
 		buttonId = buttonId.replace(/\s+/g, '');//regex
@@ -409,17 +607,17 @@ $(document).ready(function()
 		$(buttonId).hide(2000, function(){});
 	});
 
-
-	/*
-	function startNextRound()
+    $("#btn-newgame").on("click", function() 
 	{
-		console.log("startNextRound()");
-		alert("Select next villian for " + player.name + " to fight!");
-		fightEventsOutput.text("");
-	}
-	*/
+		// use instead of confirm in gameOver()
+		console.log("NEW GAME button clicked!");
+	});
 
-
+	$("#btn-quit").on("click", function() 
+	{
+		// use instead of confirm in gameOver()
+		console.log("QUIT button clicked!");
+	});
 
 	function gameOver()
 	{
@@ -459,6 +657,7 @@ $(document).ready(function()
 		console.log("***** CURRENT GAME STATS *****");
 		console.log("Player Character:");
 		console.log("** ID: " + player.id);
+		console.log("** Action State: " + player.actionState);
 		console.log("** Class: " + player.characterClass);
 		console.log("** Name: " + player.name);
 		console.log("** HP: " + player.hp);
@@ -471,6 +670,7 @@ $(document).ready(function()
 		console.log("** Defense Rating: " + player.getDefenseRating());
 		console.log("Current Opponent:")
 		console.log("** ID: " + opponent.id);
+		console.log("** Action State: " + opponent.actionState);
 		console.log("** Class: " + opponent.characterClass);
 		console.log("** Name: " + opponent.name);
 		console.log("** HP: " + opponent.hp);
@@ -494,18 +694,22 @@ $(document).ready(function()
 
 	function setPlayerCharacter(theCharacter)
 	{
+		// to advance this have a weapon array
+		// 0 = name, 1 = die type, 2 = num of die
+
 		console.log("getPlayerCharacter("+theCharacter+")");
 		theCharacter = theCharacter.toLowerCase();
 		if (theCharacter === "luke skywalker")
 		{
 			player =  {
 				id: 101,
-				characterClass: "Jedi",
+				actionState: "neutral",
+				characterClass: "Jedi Knight",
 				name: "Luke Skywalker",
 				hp: 100,
 				strength: 5,
 				dexterity: 5,
-				attack: 7, // proficiency with weapon
+				attack: 5, // proficiency with weapon
 				defend: 5, // 
 				armorClass: 12,
 				counterAttack: 2,
@@ -523,7 +727,19 @@ $(document).ready(function()
     				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return (rollDice(4,1) + this.counterAttack);
+					return (rollDice(20,1) + this.dexterity);
+				},
+				counterAttackRoll: function() {
+					var roll = rollDice(20,1);
+					
+					if(20%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -536,7 +752,8 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 102,
-				characterClass: "Outlaw",
+				actionState: "neutral",
+				characterClass: "Outlaw Smuggler",
 				name: "Chewbacca",
 				hp: 100,
 				strength: 8,
@@ -559,7 +776,19 @@ $(document).ready(function()
     				return (this.dexterity + this.armorClass);
 				},
 				getCounterAttackPower: function() {
-					return (this.counterAttack + rollDice(4,1));
+					return (rollDice(20,1) + this.dexterity);
+				},
+				counterAttackRoll: function() {
+					var roll = rollDice(4,1);
+					
+					if(4%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -572,7 +801,8 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 103,
-				characterClass: "Outlaw",
+				actionState: "neutral",
+				characterClass: "Outlaw Smuggler",
 				name: "Han Solo",
 				hp: 100,
 				strength: 5,
@@ -592,10 +822,22 @@ $(document).ready(function()
     				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return (this.dexterity + this.armorClass);
+    				return (rollDice(20,1) + this.dexterity + this.defend);
 				},
 				getCounterAttackPower: function() {
-					return (this.counterAttack + rollDice(4,1));
+					return (rollDice(20,1) + this.dexterity);
+				},
+				counterAttackRoll: function() {
+					var roll = rollDice(4,1);
+					
+					if(4%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -608,7 +850,8 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 104,
-				characterClass: "Jedi",
+				actionState: "neutral",
+				characterClass: "Jedi Knight",
 				name: "Obi-Wan Kenobi",
 				hp: 100,
 				strength: 5,
@@ -628,10 +871,22 @@ $(document).ready(function()
     				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return (this.dexterity + this.armorClass);
+    				return (rollDice(20,1) + this.dexterity + this.defend);
 				},
 				getCounterAttackPower: function() {
-					return (this.counterAttack + rollDice(4,1));
+					return (rollDice(20,1) + this.dexterity);
+				},
+				counterAttackRoll: function() {
+					var roll = rollDice(10,1);
+					
+					if(10%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -644,15 +899,16 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 105,
+				actionState: "neutral",
 				characterClass: "Princess",
 				name: "Leia Organa",
 				hp: 100,
-				strength: 5,
-				dexterity: 5,
+				strength: 3,
+				dexterity: 7,
 				attack: 2,
 				defend: 5,
 				armorClass: 10,
-				counterAttack: 2,
+				counterAttack: 5,
 				xpModifier: 2,
 				getAttackRoll: function() {
 					return (rollDice(20,1) + this.strength + this.attack);
@@ -664,10 +920,22 @@ $(document).ready(function()
     				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return (this.dexterity + this.armorClass);
+    				return (rollDice(20,1) + this.dexterity + this.defend);
 				},
 				getCounterAttackPower: function() {
-					return (this.counterAttack + rollDice(4,1));
+					return (rollDice(20,1) + this.dexterity);
+				},
+				counterAttackRoll: function() {
+					var roll = rollDice(6,1);
+					
+					if(6%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -680,7 +948,8 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 106,
-				characterClass: "Outlaw",
+				actionState: "neutral",
+				characterClass: "Outlaw Hustler",
 				name: "Lando Calrissian",
 				hp: 100,
 				strength: 5,
@@ -688,10 +957,10 @@ $(document).ready(function()
 				attack: 2,
 				defend: 5,
 				armorClass: 10,
-				counterAttack: 2,
+				counterAttack: 7,
 				xpModifier: 2,
 				getAttackRoll: function() {
-					return (rollDice(20,1) + this.strength + this.attack);
+					return (rollDice(20,1) + this.dexterity + this.attack);
 				},
 				getComboHits: function() {
 					return 1;
@@ -700,10 +969,22 @@ $(document).ready(function()
     				return (rollDice(20,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return (this.dexterity + this.armorClass);
+    				return (rollDice(20,1) + this.dexterity + this.defend);
 				},
 				getCounterAttackPower: function() {
-					return (this.counterAttack + rollDice(4,1));
+					return (rollDice(20,1) + this.dexterity);
+				},
+				counterAttackRoll: function() {
+					var roll = rollDice(12,1);
+					
+					if(12%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -716,7 +997,8 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 107,
-				characterClass: "Jedi",
+				actionState: "neutral",
+				characterClass: "Jedi Knight",
 				name: "Yoda",
 				hp: 100,
 				strength: 5,
@@ -724,7 +1006,7 @@ $(document).ready(function()
 				attack: 15,
 				defend: 5,
 				armorClass: 10,
-				counterAttack: 2,
+				counterAttack: 7,
 				xpModifier: 2,
 				getAttackRoll: function() {
 					return (rollDice(20,1) + this.strength + this.attack);
@@ -733,13 +1015,25 @@ $(document).ready(function()
 					return 1;
 				},
 				getAttackPower: function() {
-    				return (rollDice(20,1) + this.strength);
+    				return (rollDice(10,2) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return (this.dexterity + this.armorClass);
+    				return (rollDice(20,1) + this.dexterity + this.defend);
 				},
 				getCounterAttackPower: function() {
-					return (this.counterAttack + rollDice(4,1));
+					return (rollDice(20,1) + this.dexterity);
+				},
+				counterAttackRoll: function() {
+					var roll = rollDice(4,1);
+					
+					if(4%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -752,7 +1046,8 @@ $(document).ready(function()
 		{ //https://en.wikipedia.org/wiki/Ewok; https://en.wikipedia.org/wiki/Wicket_W._Warrick
 			player =  {
 				id: 108,
-				characterClass: "Warrior",
+				actionState: "neutral",
+				characterClass: "Ewok Warrior",
 				name: "Wicket", // Full name is Wicket W. Warrick
 				hp: 100,
 				strength: 5,
@@ -769,13 +1064,25 @@ $(document).ready(function()
 					return rollDice(4,1);
 				},
 				getAttackPower: function() {
-    				return (rollDice(20,1) + this.strength);
+    				return (rollDice(6,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return (this.dexterity + this.armorClass);
+    				return (rollDice(20,1) + this.dexterity + this.defend);
 				},
 				getCounterAttackPower: function() {
-					return (this.counterAttack + rollDice(4,1));
+					return (rollDice(20,1) + this.dexterity);
+				},
+				counterAttackRoll: function() {
+					var roll = rollDice(6,1);
+					
+					if(6%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				levelUp: function() {
 					this.hp += rollDice(6,1) * this.xpModifier;
@@ -798,7 +1105,8 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 210,
-			characterClass: "Marksman",
+			actionState: "neutral",
+			characterClass: "Imperial Soldier",
 			name: "Stormtrooper",
 			hp: 100,
 			strength: 5,
@@ -817,10 +1125,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.dexterity);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(6,1);
+
+				// 4/6 chances to defend
+				if(6%roll === 0)
+				{
+					this.actionState = 'defend';
+				}
+				else
+				{
+					this.actionState = 'attack';
+				}
 			}
 		};
 	}
@@ -828,7 +1162,8 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 209,
-			characterClass: "Marksman",
+			actionState: "neutral",
+			characterClass: "Imperial Soldier",
 			name: "Sandtrooper",
 			hp: 80,
 			strength: 2,
@@ -847,10 +1182,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.dexterity);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(12,1);
+				
+				if(12%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(4,1);
+
+				// 2/4 chances to defend
+				if(4%roll === 0)
+				{
+					this.actionState = 'defend';
+				}
+				else
+				{
+					this.actionState = 'attack';
+				}
 			}
 		};
 	}
@@ -858,7 +1219,8 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 208,
-			characterClass: "Outlaw",
+			actionState: "neutral",
+			characterClass: "Outlaw Nomad",
 			name: "Tusken Raider",
 			hp: 50,
 			strength: 2,
@@ -877,10 +1239,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.strength);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(20,1);
+				
+				if(20%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(12,1);
+
+				// 5/12 chances to defend
+				if(12%roll === 0)
+				{
+					this.actionState = 'defend';
+				}
+				else
+				{
+					this.actionState = 'attack';
+				}
 			}
 		};
 	}
@@ -888,7 +1276,8 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 207,
-			characterClass: "Outlaw",
+			actionState: "neutral",
+			characterClass: "Outlaw Bouncer",
 			name: "Gamorrean Guard",
 			hp: 100,
 			strength: 7,
@@ -907,10 +1296,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.dexterity);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(10,1);
+
+				// 4/10 chances to attack
+				if(10%roll === 0)
+				{
+					this.actionState = 'attack';
+				}
+				else
+				{
+					this.actionState = 'defend';
+				}
 			}
 		};
 	}
@@ -918,7 +1333,8 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 206,
-			characterClass: "Sentinel",
+			actionState: "neutral",
+			characterClass: "Emperor's Personal Guard",
 			name: "Imperial Guard",
 			hp: 100,
 			strength: 10,
@@ -937,10 +1353,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.strength);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(6,1);
+
+				// 4/6 chances to attack
+				if(6%roll === 0)
+				{
+					this.actionState = 'attack';
+				}
+				else
+				{
+					this.actionState = 'defend';
+				}
 			}
 		};
 	}
@@ -948,7 +1390,8 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 205,
-			characterClass: "Outlaw",
+			actionState: "neutral",
+			characterClass: "Bounty Hunter",
 			name: "Greedo",
 			hp: 100,
 			strength: 2,
@@ -967,17 +1410,45 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.dexterity);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(20,1);
+				
+				if(20%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(10,1);
+
+				// 4/10 chances to attack, becasue greedo doesn't shoot first
+				if(10%roll === 0)
+				{
+					this.actionState = 'attack';
+				}
+				else
+				{
+					this.actionState = 'defend';
+				}
 			}
+
 		};
 	}
 	else if (theCharacter === "bossk")
 	{
 		opponent =  {
 			id: 204,
+			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "Bossk",
 			hp: 100,
@@ -997,10 +1468,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.dexterity);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(6,1);
+
+				// 4/6 chances to attack
+				if(6%roll === 0)
+				{
+					this.actionState = 'attack';
+				}
+				else
+				{
+					this.actionState = 'defend';
+				}
 			}
 		};
 	}
@@ -1008,6 +1505,7 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 203,
+			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "IG-88",
 			hp: 100,
@@ -1027,10 +1525,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.dexterity);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(4,1);
+
+				// 2/4 chances to defend
+				if(4%roll === 0)
+				{
+					this.actionState = 'defend';
+				}
+				else
+				{
+					this.actionState = 'attack';
+				}
 			}
 		};
 	}
@@ -1038,6 +1562,7 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 202,
+			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "Boba Fett",
 			hp: 100,
@@ -1057,10 +1582,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.dexterity);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(6,1);
+				
+				if(6%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(12,1);
+
+				// 5/12 chance to attack
+				if(12%roll === 0)
+				{
+					this.actionState = 'attack';
+				}
+				else
+				{
+					this.actionState = 'defend';
+				}
 			}
 		};
 	}
@@ -1068,7 +1619,8 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 201,
-			characterClass: "Sith",
+			actionState: "neutral",
+			characterClass: "Sith Lord",
 			name: "Darth Vader",
 			hp: 100,
 			strength: 5,
@@ -1087,10 +1639,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.strength);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(20,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(12,1);
+				
+				if(12%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(10,1);
+
+				// 4/10 chances to attack
+				if(10%roll === 0)
+				{
+					this.actionState = 'attack';
+				}
+				else
+				{
+					this.actionState = 'defend';
+				}
 			}
 		};
 	}
@@ -1098,7 +1676,8 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 200,
-			characterClass: "Sith",
+			actionState: "neutral",
+			characterClass: "Sith Lord",
 			name: "Emperor Palpatine",
 			hp: 100,
 			strength: 5,
@@ -1106,9 +1685,9 @@ function setOpponentCharacter(theCharacter)
 			attack: 15,
 			defend: 5,
 			armorClass: 10,
-			counterAttack: 2,
+			counterAttack: 8,
 			getAttackRoll: function() {
-				return (rollDice(20,1) + this.dexterity + this.attack);
+				return (rollDice(8,3) + this.dexterity + this.attack);
 			},
 			getComboHits: function() {
 				return rollDice(4,1);
@@ -1117,10 +1696,36 @@ function setOpponentCharacter(theCharacter)
     			return (rollDice(20,1) + this.dexterity);
     		},
 			getDefenseRating: function() {
-				return (this.dexterity + this.armorClass);
+				return (rollDice(10,1) + this.dexterity + this.defend);
 			},
 			getCounterAttackPower: function() {
-				return (this.counterAttack + rollDice(4,1));
+				return (rollDice(20,1) + this.dexterity);
+			},
+			counterAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
+			setActionState:  function() {
+				// rollDice
+				var roll = rollDice(20,1);
+
+				// 5/20 chances to attack
+				if(20%roll === 0)
+				{
+					this.actionState = 'attack';
+				}
+				else
+				{
+					this.actionState = 'defend';
+				}
 			}
 		};
 	}
@@ -1128,11 +1733,33 @@ function setOpponentCharacter(theCharacter)
 	{
 		console.log("Unexpected villain selected!");
 	}
+
+	/*
+	https://darkelfdice.com/collections/7-dice-sets
+	// defese probablity is higher for some characters
+
+	d4 : % = 0, 1,4 - 50% -- equal chance
+	
+	d6 : % = 0, 1,2,3,6 -  4/6 -- higher chance
+	
+	d8 : % = 0, 1,2,4,8 - 4/8 (50%) -- equal chance
+	
+	d10 : % = 0, 1,2,5,10 - 4/10 -- lower chance
+	
+	d12 : % = 0, 1,2,3,4,6 -- 5/12, slightly less than equal chance
+	
+	d20 : % = 0,  1,2,4,5,10 -- 5/20 (25%), rare chance
+
+	//https://www.calculatorsoup.com/calculators/math/fractionscomparing.php
+	// 3/8 > 1/4
+
+	*/
 }
 
 function EmptyCharacter()
 {
 	this.id = 0;
+	this.actionState = "";
 	this.characterClass = "";
 	this.name = "";
 	this.hp = 0;
