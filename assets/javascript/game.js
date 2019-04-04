@@ -201,6 +201,7 @@ $(document).ready(function()
 				logGameStats();
 				//show battleGround
 				battleGround.show(2000, function(){});
+				//battleGround.show(2000).css("display", "inline-block"); ---- USING CSS TO HIDE/SHOW
 				//show fightDataArea
 				fightDataArea.show(2000, function(){});
 				refreshBattleGround();
@@ -240,13 +241,11 @@ $(document).ready(function()
 						{
 							opponent.hp = 0;
 
-
-
 							player.hp = playerBaseHealth;
+
 							player.levelUp();
+
 							playerBaseHealth = player.hp;
-
-
 
 							refreshBattleGround();
 							startNextRound();
@@ -315,6 +314,11 @@ $(document).ready(function()
 					// player attacks
 					var playerDmgToOpponent03 = doAttackAction(player, opponent);
 
+					var dmgReductionPercent = opponent.getDefenseRating() / 100;
+					var dmgReduction = Math.floor(playerDmgToOpponent03 * dmgReductionPercent);
+					fightEvents.append(opponent.name + " damage reduced by " + dmgReduction + " points."  + "<br>");
+					playerDmgToOpponent03 = Math.floor(playerDmgToOpponent03 - dmgReduction);
+
 					opponent.hp = opponent.hp - playerDmgToOpponent03;
 
 					if (opponent.hp <= 0)
@@ -335,12 +339,10 @@ $(document).ready(function()
 
 							fightEvents.append(opponent.name + " counter attacks " + player.name + " for " + opponentCounterAttack + " points." + "<br>");
 
-							var counterDmgPercent = player.getDefenseRating() / 100;
-							var counterDmgReduction = Math.floor(opponentCounterAttack * counterDmgPercent);
-
-							fightEvents.append(player.name + " damage reduced by " + counterDmgReduction + " points." + "<br>");
-
-							opponentCounterAttack = Math.floor(opponentCounterAttack - counterDmgReduction);
+							//var counterDmgPercent = player.getDefenseRating() / 100;
+							//var counterDmgReduction = Math.floor(opponentCounterAttack * counterDmgPercent);
+							//fightEvents.append(player.name + " damage reduced by " + counterDmgReduction + " points." + "<br>");
+							//opponentCounterAttack = Math.floor(opponentCounterAttack - counterDmgReduction);
 
 							player.hp = player.hp - opponentCounterAttack;
 
@@ -398,13 +400,10 @@ $(document).ready(function()
 			}
 		}
 
-		var attackedDmgReductionPercent = theAttacked.getDefenseRating() / 100;
-
-		var attackedDmgReduction = Math.floor(totalDmg * attackedDmgReductionPercent);
-	
-		fightEvents.append(theAttacked.name + " damage reduced by " + attackedDmgReduction + " points."  + "<br>");
-
-		totalDmg = Math.floor(totalDmg - attackedDmgReduction);
+		//var attackedDmgReductionPercent = theAttacked.getDefenseRating() / 100;
+		//var attackedDmgReduction = Math.floor(totalDmg * attackedDmgReductionPercent);
+		//fightEvents.append(theAttacked.name + " damage reduced by " + attackedDmgReduction + " points."  + "<br>");
+		//totalDmg = Math.floor(totalDmg - attackedDmgReduction);
 
 		return totalDmg;
 	}
@@ -433,6 +432,11 @@ $(document).ready(function()
 					// calculate damage done to player
 					var opponentAttack = doAttackAction(opponent,player);
 
+					var dmgReductionPercent = player.getDefenseRating() / 100;
+					var dmgReduction = Math.floor(opponentAttack * dmgReductionPercent);
+					fightEvents.append(player.name + " damage reduced by " + dmgReduction + " points."  + "<br>");
+					opponentAttack = Math.floor(opponentAttack - dmgReduction);
+
 					player.hp = player.hp - opponentAttack;
 
 					//did player die?
@@ -450,13 +454,10 @@ $(document).ready(function()
 
 							fightEvents.append(player.name + " counter attacks " + opponent.name + " for " + counterDmg + " points." + "<br>");
 
-							var opponentDmgPercent = opponent.getDefenseRating() / 100;
-
-							var opponentDmgReduction = Math.floor(counterDmg * opponentDmgPercent);
-
-							fightEvents.append(opponent.name + " damage reduced by " + opponentDmgReduction + " points." + "<br>");
-
-							counterDmg = Math.floor(counterDmg - opponentDmgReduction);
+							//var opponentDmgPercent = opponent.getDefenseRating() / 100;
+							//var opponentDmgReduction = Math.floor(counterDmg * opponentDmgPercent);
+							//fightEvents.append(opponent.name + " damage reduced by " + opponentDmgReduction + " points." + "<br>");
+							//counterDmg = Math.floor(counterDmg - opponentDmgReduction);
 
 							opponent.hp = opponent.hp - counterDmg;
 
