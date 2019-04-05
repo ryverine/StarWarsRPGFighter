@@ -3,7 +3,7 @@ Select all spans that are immediate children of buttons
 From calculator
 */
 
-/* ELEMENT */
+/*** ELEMENT ***/
 
 button > span {
     font-size: 20px;
@@ -12,9 +12,12 @@ button > span {
 
 
 
-/* CLASS */
+/*** CLASS ***/
 
-
+.inlineBlockDisplay{
+	display: inline-block;
+	vertical-align: middle;
+}
 
 .btn-primary{
 	margin: 2px;
@@ -56,22 +59,30 @@ button > span {
 	background-color: red;
 }
 
-/* ID */
+/*** ID ***/
+
+#heroSelectionArea{
+	margin: 10px;
+}
 
 #villainSelectionArea{
 	display: none;
+	margin: 10px;
 }
 
 #battleGround{
 	display: none;
+	margin: 10px;
 }
 
 #fightDataArea{
 	display: none;
+	margin: 10px;
 }
 
 #battleComplete{
 	display: none;
+	margin: 10px;
 	padding: 5px;
 	text-align: center;
 	color: white;
@@ -93,10 +104,67 @@ button > span {
 	font-weight: bold;
 }
 
+#btn-continue:hover{
+	background-color: #ffc107; /*warning yellow*/
+	border: 5px solid #dc3545; /*danger red*/
+}
+
+#btn-attack{
+	margin: 5px;
+	border: 5px solid #dc3545; /*danger red*/
+}
+
+#btn-attack:hover{
+	border: 5px solid #ffc107; /*warning yellow*/
+	background-color: #dc3545; /*danger red*/
+}
+
+#btn-defend{
+	margin: 5px;
+	border: 5px solid #ffc107; /*warning yellow*/
+}
+
+#btn-defend:hover{
+	border: 5px solid #dc3545; /*danger red*/
+	background-color: #ffc107;
+}
+
+#btn-continue{
+	display: none;
+	border: 5px solid #ffc107; /*warning yellow*/
+}
+
+#btn-continue:hover{
+	border: 5px solid #dc3545; /*danger red*/
+}
+
 #btn-newgame{
 	display: none;
+	border: 5px solid #ffc107; /*warning yellow*/
+}
+
+#btn-newgame:hover{
+	border: 5px solid #dc3545; /*danger red*/
 }
 
 #btn-quit{
 	display: none;
+	border: 5px solid #dc3545; /*danger red*/
 }
+
+#btn-quit:hover{
+	border: 5px solid #ffc107; /*warning yellow*/
+}
+
+#vsIcon{
+	/*vertical-align: middle;*/
+}
+
+
+
+
+
+
+
+
+

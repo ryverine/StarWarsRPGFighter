@@ -110,7 +110,7 @@
         </div>
         <button id="btn-continue" class="btn btn-warning" value="Continue"><span>Select Next Opponent</span></button>
         <button id="btn-newgame" class="btn btn-warning" value="New Game"><span>New Game</span></button>
-        <button id="btn-quit" class="btn btn-warning" value="quit"><span>Quit</span></button>
+        <button id="btn-quit" class="btn btn-danger" value="quit"><span>Quit</span></button>
     </div>
 
 
@@ -118,7 +118,8 @@
   
     <!-- BATTLE GROUND -->
     <div class="row" id="battleGround">
-      <div class="col-xs-5">
+
+      <div id="heroBattleCard" class="col-xs-5 inlineBlockDisplay">
         <div class="card">
           <div class="card-header">
             <div id="heroName" class="characterName">HERO</div>
@@ -135,14 +136,14 @@
         </div>
       </div>
 
-      <div class="col-xs-1">
-        <div class="card">
-          <div><h3>VS.</h3></div>
-        </div>
+      <div id="vsCard" class="col-xs-2 inlineBlockDisplay">
+          <div>
+            <img src="assets/images/icons/vs.png" id="vsIcon">
+          </div>
       </div>
 
-      <div class="col-xs-5">
-        <div class="card">
+      <div class="col-xs-5 inlineBlockDisplay">
+        <div  class="card">
           <div class="card-header">
             <div id="villainName" class="characterName">villain</div>
             <div id="villainClass" class="characterClass">villain</div>
@@ -153,6 +154,7 @@
           </div>
         </div>
       </div>
+
     </div> <!-- /row -->
     
 
@@ -161,21 +163,25 @@
     </div>  /row -->
 
     <div class="row" id="fightDataArea">
-      <div class="col-xs-5">
+
+      <div class="col-xs-5 inlineBlockDisplay">
         <div class="card">
           <div class="card-header"><h3>Fight Events</h3></div>
           <div id="fightEvents" class="card-body"></div>
           <div class="card-footer text-muted"></div>
         </div>
       </div>
-      <div class="col-xs-2">&nbsp</div>
-      <div class="col-xs-5">
+
+      <div class="col-xs-2 inlineBlockDisplay">&nbsp</div>
+
+      <div id="battleOrderCard" class="col-xs-5 inlineBlockDisplay">
         <div class="card">
           <div class="card-header"><h3>Battle Order</h3></div>
           <div id="battleOrder" class="card-body"></div>
           <div class="card-footer text-muted"></div>
         </div>
       </div>
+
     </div> <!-- /row -->
 
   </div> <!-- /container -->
