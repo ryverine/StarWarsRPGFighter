@@ -328,15 +328,36 @@ $(document).ready(function()
 	function doAttackAction(theAttacker, theAttacked)
 	{
 		var attackerComboHits = theAttacker.getComboHits();
+
+		var damage = 0;
+
 		var totalDmg = 0;
 
-		for(var i = 0; i < attackerComboHits; i++)
+		if(theAttacker.comboAttackRoll())
+		{
+			for(var i = 0; i < attackerComboHits; i++)
+			{
+				if(theAttacker.getAttackRoll() >= theAttacked.armorClass)
+				{
+					damage = theAttacker.getAttackPower();
+
+					totalDmg  += damage;
+
+					actionDetails += theAttacker.name + " ATTACKS " + theAttacked.name + " for " + "<strong>" + damage + " DMG " + "</strong>" + "points." + "<br>";
+				}
+				else
+				{
+					actionDetails += theAttacker.name + " attack missed " + theAttacked.name + "!" + "<br>";
+				}
+			}
+		}
+		else
 		{
 			if(theAttacker.getAttackRoll() >= theAttacked.armorClass)
 			{
-				var damage = theAttacker.getAttackPower();
+				damage = theAttacker.getAttackPower();
 
-				totalDmg  += damage;
+				totalDmg += damage;
 
 				actionDetails += theAttacker.name + " ATTACKS " + theAttacked.name + " for " + "<strong>" + damage + " DMG " + "</strong>" + "points." + "<br>";
 			}
@@ -348,6 +369,7 @@ $(document).ready(function()
 
 		return totalDmg;
 	}
+
 
 	//defend button onclick
 	$("#btn-defend").on("click", function() 
@@ -597,6 +619,8 @@ $(document).ready(function()
 
 		actionCount = 0;
 
+		fightNumber = 0;
+
 		battleOrder.text("");
 
 		refreshBattleGround();
@@ -721,6 +745,9 @@ $(document).ready(function()
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
 				},
+				comboAttackRoll: function() {
+					return false;
+				},
 				counterAttackRoll: function() {
 					var roll = rollDice(20,1);
 					
@@ -770,6 +797,18 @@ $(document).ready(function()
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
 				},
+				comboAttackRoll: function() {
+					var roll = rollDice(6,1);
+					
+					if(6%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				},
 				counterAttackRoll: function() {
 					var roll = rollDice(4,1);
 					
@@ -808,7 +847,7 @@ $(document).ready(function()
 					return (rollDice(20,1) + this.dexterity + this.attack);
 				},
 				getComboHits: function() {
-					return 1;
+					return rollDice(4,1);
 				},
 				getAttackPower: function() {
     				return (rollDice(8,1) + this.strength);
@@ -818,6 +857,18 @@ $(document).ready(function()
 				},
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
+				},
+				comboAttackRoll: function() {
+					var roll = rollDice(12,1);
+					
+					if(12%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				counterAttackRoll: function() {
 					var roll = rollDice(4,1);
@@ -868,6 +919,9 @@ $(document).ready(function()
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
 				},
+				comboAttackRoll: function() {
+					return false;
+				},
 				counterAttackRoll: function() {
 					var roll = rollDice(10,1);
 					
@@ -917,6 +971,18 @@ $(document).ready(function()
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
 				},
+				comboAttackRoll: function() {
+					var roll = rollDice(10,1);
+					
+					if(10%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				},
 				counterAttackRoll: function() {
 					var roll = rollDice(6,1);
 					
@@ -955,7 +1021,7 @@ $(document).ready(function()
 					return (rollDice(20,1) + this.dexterity + this.attack);
 				},
 				getComboHits: function() {
-					return 1;
+					return rollDice(4,1);
 				},
 				getAttackPower: function() {
     				return (rollDice(8,1) + this.strength);
@@ -965,6 +1031,18 @@ $(document).ready(function()
 				},
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
+				},
+				comboAttackRoll: function() {
+					var roll = rollDice(20,1);
+					
+					if(20%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				},
 				counterAttackRoll: function() {
 					var roll = rollDice(12,1);
@@ -1015,6 +1093,9 @@ $(document).ready(function()
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
 				},
+				comboAttackRoll: function() {
+					return false;
+				},
 				counterAttackRoll: function() {
 					var roll = rollDice(4,1);
 					
@@ -1064,6 +1145,18 @@ $(document).ready(function()
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
 				},
+				comboAttackRoll: function() {
+					var roll = rollDice(12,1);
+					
+					if(12%roll === 0)
+					{
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				},
 				counterAttackRoll: function() {
 					var roll = rollDice(6,1);
 					
@@ -1111,7 +1204,7 @@ function setOpponentCharacter(theCharacter)
 				return (rollDice(20,1) + this.dexterity + this.attack);
 			},
 			getComboHits: function() {
-				return 1;
+				return rollDice(4,1);
 			},
 			getAttackPower: function() {
     			return (rollDice(10,1) + this.dexterity);
@@ -1121,6 +1214,18 @@ function setOpponentCharacter(theCharacter)
 			},
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
+			},
+			comboAttackRoll: function() {
+				var roll = rollDice(20,1);
+				
+				if(20%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			},
 			counterAttackRoll: function() {
 				var roll = rollDice(4,1);
@@ -1179,6 +1284,9 @@ function setOpponentCharacter(theCharacter)
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
 			},
+			comboAttackRoll: function() {
+				return false;
+			},
 			counterAttackRoll: function() {
 				var roll = rollDice(12,1);
 				
@@ -1235,6 +1343,18 @@ function setOpponentCharacter(theCharacter)
 			},
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
+			},
+			comboAttackRoll: function() {
+				var roll = rollDice(12,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			},
 			counterAttackRoll: function() {
 				var roll = rollDice(20,1);
@@ -1293,6 +1413,18 @@ function setOpponentCharacter(theCharacter)
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
 			},
+			comboAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
 			counterAttackRoll: function() {
 				var roll = rollDice(4,1);
 				
@@ -1350,6 +1482,18 @@ function setOpponentCharacter(theCharacter)
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
 			},
+			comboAttackRoll: function() {
+				var roll = rollDice(12,1);
+				
+				if(12%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
 			counterAttackRoll: function() {
 				var roll = rollDice(4,1);
 				
@@ -1406,6 +1550,9 @@ function setOpponentCharacter(theCharacter)
 			},
 			getCounterAttackPower: function() {
 				return (rollDice(12,2) + this.dexterity + this.counterAttack);
+			},
+			comboAttackRoll: function() {
+				return false;
 			},
 			counterAttackRoll: function() {
 				var roll = rollDice(10,1);
@@ -1465,6 +1612,9 @@ function setOpponentCharacter(theCharacter)
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
 			},
+			comboAttackRoll: function() {
+					return false;
+			},
 			counterAttackRoll: function() {
 				var roll = rollDice(4,1);
 				
@@ -1521,6 +1671,9 @@ function setOpponentCharacter(theCharacter)
 			},
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
+			},
+			comboAttackRoll: function() {
+				return false;
 			},
 			counterAttackRoll: function() {
 				var roll = rollDice(4,1);
@@ -1579,6 +1732,18 @@ function setOpponentCharacter(theCharacter)
 			getCounterAttackPower: function() {
 				return (rollDice(12,2) + this.dexterity + this.counterAttack);
 			},
+			comboAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			},
 			counterAttackRoll: function() {
 				var roll = rollDice(6,1);
 				
@@ -1636,6 +1801,9 @@ function setOpponentCharacter(theCharacter)
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
 			},
+			comboAttackRoll: function() {
+				return false;
+			},
 			counterAttackRoll: function() {
 				var roll = rollDice(12,1);
 				
@@ -1692,6 +1860,18 @@ function setOpponentCharacter(theCharacter)
 			},
 			getCounterAttackPower: function() {
 				return (rollDice(10,2) + this.dexterity + this.counterAttack);
+			},
+			comboAttackRoll: function() {
+				var roll = rollDice(4,1);
+				
+				if(4%roll === 0)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			},
 			counterAttackRoll: function() {
 				var roll = rollDice(4,1);
