@@ -1,6 +1,5 @@
 
 
-
 $(document).ready(function() 
 {
 	var gameOverFlag = false;
@@ -28,6 +27,8 @@ $(document).ready(function()
 	var battleCompleteMessage = $("#battleCompleteMessage");
 
 	var fightNumber = 0;
+
+	var villainTotal = 11;
 
 	var actionCount = 0;
 
@@ -95,6 +96,10 @@ $(document).ready(function()
 				heroSelectionArea.hide(2000);
 
 				villainSelectionArea.show(2000);
+
+				var imgSrc = "<img src='" + player.imgUrl + "'>";
+
+				$("#heroArea").html(imgSrc);
 
 			}
 
@@ -189,7 +194,15 @@ $(document).ready(function()
 
 							refreshBattleGround();
 
-							startNextRound();
+							// was this the last villain?
+							if(fightNumber === villainTotal)
+							{
+								gameOver(true);
+							}
+							else	
+							{
+								startNextRound();
+							}
 						}
 						else
 						{
@@ -201,7 +214,7 @@ $(document).ready(function()
 							{
 								player.hp = 0;
 								refreshBattleGround();
-								gameOver();
+								gameOver(false);
 							}
 							else
 							{
@@ -221,7 +234,7 @@ $(document).ready(function()
 						{
 							player.hp = 0;
 							refreshBattleGround();
-							gameOver();
+							gameOver(false);
 						}
 						else
 						{
@@ -236,7 +249,16 @@ $(document).ready(function()
 								player.levelUp();
 								playerBaseHealth = player.hp;
 								refreshBattleGround();
-								startNextRound();
+
+								// was this the last villain?
+								if(fightNumber === villainTotal)
+								{
+									gameOver(true);
+								}
+								else	
+								{
+									startNextRound();
+								}
 							}
 							else
 							{
@@ -273,7 +295,16 @@ $(document).ready(function()
 						player.levelUp();
 						playerBaseHealth = player.hp;
 						refreshBattleGround();
-						startNextRound();
+						
+						// was this the last villain?
+						if(fightNumber === villainTotal)
+						{
+							gameOver(true);
+						}
+						else	
+						{
+							startNextRound();
+						}
 					}
 					else
 					{
@@ -289,7 +320,7 @@ $(document).ready(function()
 							{
 								player.hp = 0;
 								refreshBattleGround();
-								gameOver();
+								gameOver(false);
 							}
 							else
 							{
@@ -423,7 +454,7 @@ $(document).ready(function()
 
 						refreshBattleGround();
 
-						gameOver();
+						gameOver(false);
 					}
 					else
 					{
@@ -447,7 +478,15 @@ $(document).ready(function()
 
 								refreshBattleGround();
 
-								startNextRound();
+								// was this the last villain?
+								if(fightNumber === villainTotal)
+								{
+									gameOver(true);
+								}
+								else	
+								{
+									startNextRound();
+								}
 							}
 						}
 						else
@@ -471,7 +510,6 @@ $(document).ready(function()
 			{
 				console.log("No player character selected!");
 			}
-
 
 			fightEvents.prepend(actionDetails);
 
@@ -585,11 +623,20 @@ $(document).ready(function()
 		$(buttonId).hide(2000);
 	});
 
-	function gameOver()
+	function gameOver(playerWins)
 	{
-		console.log("gameOver()");
+		console.log("gameOver("+playerWins+")");
 
-		//var playAgain = confirm("GAME OVER" + "\n" + player.name + " was defeated by " + opponent.name + "!" + "\n" + "Would you like to play again?");
+		var theMessage ="";
+
+		if(playerWins)
+		{
+			theMessage = player.name + " defeated " + opponent.name + "!" + "<br>" + "The galaxy is now free from the grip of tyranny!" + "<br>" + "GOOD JOB!";
+		}
+		else
+		{
+			theMessage = opponent.name + " defeated " + player.name  + "!" + "<br>" + "The galaxy has lost all hope!";
+		}
 
 		battleCompleteMessage.text("");
 		
@@ -597,17 +644,17 @@ $(document).ready(function()
 
 		$("#btn-continue").hide();
 
-		battleCompleteMessage.append(opponent.name + " defeated " + player.name  + "!" + "<br>" + "The galaxy has lost all hope!");
+		battleCompleteMessage.append(theMessage);
 
 		$("#btn-newgame").show();
 
 		$("#btn-quit").show();
+		
 	}
 
 
 	$("#btn-newgame").on("click", function() 
 	{
-		// use instead of confirm in gameOver()
 		console.log("NEW GAME button clicked!");
 
 		player = new EmptyCharacter ();
@@ -624,11 +671,6 @@ $(document).ready(function()
 		battleOrder.text("");
 
 		refreshBattleGround();
-
-		//make sure all villain buttons are showing
-		//var buttonId = opponent.name.toLowerCase();
-		//buttonId = buttonId.replace(/\s+/g, '');// regex to remove space characters
-		//buttonId = "#btn-" + buttonId;
 		
 		fightDataArea.hide(2000);
 
@@ -662,10 +704,12 @@ $(document).ready(function()
 
 	$("#btn-quit").on("click", function() 
 	{
-		// use instead of confirm in gameOver()
-		console.log("QUIT button clicked!");
-		battleCompleteMessage.prepend("<h3>" + "GAME OVER" + "</h3>");
-		gameOverFlag = true;
+		if(!gamerOverFlag)
+		{
+			console.log("QUIT button clicked!");
+			battleCompleteMessage.prepend("<h3>" + "GAME OVER" + "</h3>");
+			gameOverFlag = true;
+		}
 	});
 
 	function logGameStats()
@@ -697,14 +741,6 @@ $(document).ready(function()
 		console.log("** Armor: " + opponent.armor);
 		console.log("** Attack Power: " + opponent.getAttackPower());
 		console.log("** Defense Rating: " + opponent.getDefenseRating());
-		/*
-		console.log("Opponent Fight Order: ");
-
-		/*for(var i = 0; i < opponents.length; i++)
-		{
-			console.log("[" + i + "]: " + opponents[i].name);
-		}*/
-
 		console.log("******************************");
 	}
 
@@ -719,13 +755,14 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 101,
+				imgUrl: "../images/card/luke.png",
 				actionState: "neutral",
 				characterClass: "Jedi Knight",
 				name: "Luke Skywalker",
 				hp: 100,
 				strength: 5,
 				dexterity: 5,
-				attack: 5, // proficiency with weapon
+				attack: 7, // proficiency with weapon
 				defend: 5, // 
 				armorClass: 10,
 				counterAttack: 2,
@@ -771,13 +808,14 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 102,
+				imgUrl: "../images/",
 				actionState: "neutral",
 				characterClass: "Outlaw Smuggler",
 				name: "Chewbacca",
-				hp: 100,
+				hp: 250,
 				strength: 8,
 				dexterity: 3,
-				attack: 4,
+				attack: 5,
 				defend: 5,
 				armorClass: 10,
 				counterAttack: 4,
@@ -792,7 +830,7 @@ $(document).ready(function()
     				return (rollDice(8,1) + this.strength);
     			},
     			getDefenseRating: function() {
-    				return (this.dexterity + this.armorClass);
+    				return (this.dexterity + this.armorClass + this.defend);
 				},
 				getCounterAttackPower: function() {
 					return (rollDice(10,2) + this.dexterity + this.counterAttack);
@@ -832,10 +870,11 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 103,
+				imgUrl: "../images/",
 				actionState: "neutral",
 				characterClass: "Outlaw Smuggler",
 				name: "Han Solo",
-				hp: 100,
+				hp: 200,
 				strength: 5,
 				dexterity: 5,
 				attack: 2,
@@ -893,10 +932,11 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 104,
+				imgUrl: "../images/",
 				actionState: "neutral",
 				characterClass: "Jedi Knight",
 				name: "Obi-Wan Kenobi",
-				hp: 100,
+				hp: 400,
 				strength: 5,
 				dexterity: 5,
 				attack: 10,
@@ -945,10 +985,11 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 105,
+				imgUrl: "../images/",
 				actionState: "neutral",
 				characterClass: "Princess",
 				name: "Leia Organa",
-				hp: 100,
+				hp: 80,
 				strength: 3,
 				dexterity: 7,
 				attack: 2,
@@ -1006,10 +1047,11 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 106,
+				imgUrl: "../images/",
 				actionState: "neutral",
 				characterClass: "Outlaw Hustler",
 				name: "Lando Calrissian",
-				hp: 100,
+				hp: 180,
 				strength: 5,
 				dexterity: 5,
 				attack: 2,
@@ -1067,11 +1109,12 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 107,
+				imgUrl: "../images/",
 				actionState: "neutral",
 				characterClass: "Jedi Knight",
 				name: "Yoda",
-				hp: 100,
-				strength: 5,
+				hp: 500,
+				strength: 8,
 				dexterity: 5,
 				attack: 15,
 				defend: 5,
@@ -1119,10 +1162,11 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 108,
+				imgUrl: "../images/",
 				actionState: "neutral",
 				characterClass: "Ewok Warrior",
 				name: "Wicket", // Full name is Wicket W. Warrick
-				hp: 100,
+				hp: 80,
 				strength: 5,
 				dexterity: 2,
 				attack: 2,
@@ -1184,16 +1228,30 @@ $(document).ready(function()
 
 function setOpponentCharacter(theCharacter)
 {
+
+	/*
+		Idea for later:
+		Instead of hard coding HP value, at opponent selection get base HP of player.
+		rollDice (die can be different between characters)
+		Result of roll is percent of player HP
+		set opponent HP to that percent + palyer base HP
+		this would scale the opponents to the player's current level.
+		- not great if we want palpatine and darth vader to always be a challenge.
+	*/
+
 	console.log("getOpponentCharacter("+theCharacter+")");
+
 	theCharacter = theCharacter.toLowerCase();
+
 	if (theCharacter === "stormtrooper")
 	{
 		opponent =  {
 			id: 210,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Imperial Soldier",
 			name: "Stormtrooper",
-			hp: 200,
+			hp: 150,
 			strength: 5,
 			dexterity: 7,
 			attack: 4,
@@ -1259,10 +1317,11 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 209,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Imperial Soldier",
 			name: "Sandtrooper",
-			hp: 100,
+			hp: 80,
 			strength: 2,
 			dexterity: 5,
 			attack: 2,
@@ -1319,6 +1378,7 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 208,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Outlaw Nomad",
 			name: "Tusken Raider",
@@ -1388,10 +1448,11 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 207,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Outlaw Bouncer",
 			name: "Gamorrean Guard",
-			hp: 400,
+			hp: 200,
 			strength: 7,
 			dexterity: 5,
 			attack: 4,
@@ -1457,10 +1518,11 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 206,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Emperor's Personal Guard",
 			name: "Imperial Guard",
-			hp: 800,
+			hp: 400,
 			strength: 10,
 			dexterity: 5,
 			attack: 5,
@@ -1526,10 +1588,11 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 205,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "Greedo",
-			hp: 500,
+			hp: 100,
 			strength: 2,
 			dexterity: 5,
 			attack: 3,
@@ -1587,10 +1650,11 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 204,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "Bossk",
-			hp: 700,
+			hp: 300,
 			strength: 5,
 			dexterity: 7,
 			attack: 5,
@@ -1647,10 +1711,11 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 203,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "IG-88",
-			hp: 700,
+			hp: 400,
 			strength: 5,
 			dexterity: 5,
 			attack: 2,
@@ -1707,10 +1772,11 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 202,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "Boba Fett",
-			hp: 850,
+			hp: 500,
 			strength: 5,
 			dexterity: 10,
 			attack: 8,
@@ -1776,10 +1842,11 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 201,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Sith Lord",
 			name: "Darth Vader",
-			hp: 1000,
+			hp: 700,
 			strength: 5,
 			dexterity: 5,
 			attack: 2,
@@ -1836,10 +1903,11 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 200,
+			imgUrl: "../images/",
 			actionState: "neutral",
 			characterClass: "Sith Lord",
 			name: "Emperor Palpatine",
-			hp: 1250,
+			hp: 1000,
 			strength: 5,
 			dexterity: 10,
 			attack: 15,
@@ -1931,6 +1999,7 @@ function setOpponentCharacter(theCharacter)
 function EmptyCharacter()
 {
 	this.id = 0;
+	this.imgUrl = "";
 	this.actionState = "";
 	this.characterClass = "";
 	this.name = "";

@@ -14,6 +14,7 @@ For the combat calulations I have used D&D 5e as a guideline.
 
 ## Game Mechanics 
 
+
 ### Basic Play
 
 1. Player selects a hero character by clicking a hero icon.
@@ -85,11 +86,104 @@ Characters with armor:
 
 ## Global Variables
 
+### gameOverFlag
 
+### player
+
+Player Character
+
+	player =  {
+	id: 108,
+	imgUrl: "../images/",
+	actionState: "neutral",
+	characterClass: "Ewok Warrior",
+	name: "Wicket", // Full name is Wicket W. Warrick
+	hp: 80,
+	strength: 5,
+	dexterity: 2,
+	attack: 2,
+	defend: 5,
+	armorClass: 10,
+	counterAttack: 2,
+	xpModifier: 3,
+
+	getAttackRoll: function() {}
+	getComboHits: function() {}
+	getAttackPower: function() {}
+    	getDefenseRating: function() {}
+	getCounterAttackPower: function() {}
+	comboAttackRoll: function() {}
+	counterAttackRoll: function() {},
+	levelUp: function() {}
+	}
+
+### opponent
+
+Opponent Character
+
+	opponent =  {
+	id: 200,
+	imgUrl: "../images/",
+	actionState: "neutral",
+	characterClass: "Sith Lord",
+	name: "Emperor Palpatine",
+	hp: 1000,
+	strength: 5,
+	dexterity: 10,
+	attack: 15,
+	defend: 5,
+	armorClass: 10,
+	counterAttack: 8,
+
+	getAttackRoll: function() {}
+	getComboHits: function(){}
+	getDefenseRating: function() {}
+	getCounterAttackPower: function() {}
+	comboAttackRoll: function() {}
+	counterAttackRoll: function() {}
+	setActionState:  function() {}
+	}
+
+### playerBaseHealth
+### heroSelectionArea
+### villainSelectionArea
+### battleGround
+### fightDataArea
+### fightEvents
+### battleOrder
+### battleComplete
+### battleCompleteMessage
+### fightNumber
+### villainTotal
+### actionCount
+### actionDetails
+
+## Event Listeners
+
+### $(".heroCharacter") : mouseover
+### $(".heroCharacter") : mouseout
+### $(".villainCharacter") : mouseover
+### $(".villainCharacter") : mouseout
+### $(".heroCharacter") : click
+### $(".villainCharacter") : click
+### $("#btn-attack") : click
+### $("#btn-defend") : click
+### $("#btn-continue") : click
+### $("#btn-newgame") : click
+### $("#btn-quit") : click
 
 ## Functions
 
-
+### doAttackAction(theAttacker, theAttacked)
+### rollDice(dieType, numDie)
+### rollForInitiative(rollerOne, rollerTwo)
+### refreshBattleGround()
+### startNextRound()
+### gameOver(playerWins)
+### logGameStats()
+### setPlayerCharacter(theCharacter)
+### setOpponentCharacter(theCharacter)
+### EmptyCharacter(){}
 
 ## Things to Do
 
@@ -106,3 +200,20 @@ Characters with armor:
  * Arcade Mode: The standard moode of play, as described under Basic Play.
 
  * Story Mode: The player picks a hero character. The hero must then face villian characters in a set order. Some villians can be re-used (stormtrooper, tuskan raider, Gamorrean, etc...)
+
+
+ *************************************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
