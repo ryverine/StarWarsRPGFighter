@@ -22,7 +22,7 @@
 
 <nav class="navbar navbar-dark bg-dark">
   <span>
-    <img src="assets/images/icons/swLogo.png" class="img-fluid">
+    <img src="assets/images/icons/swLogo.png" class="img-fluid"> <spna>&nbsp</spna>
     <img src="assets/images/icons/rpgFighter.png" class="img-fluid">
   </span>
 </nav>
@@ -34,7 +34,7 @@
       <!-- HEROES -->
       <div class="col-xs-12">
         <div class="card">
-          <div class="card-header" id="heroHeader">
+          <div class="card-header" id="heroSelectHeader">
               <img src="assets/images/icons/selectHero.png" class="img-fluid">
           </div>
 
@@ -56,7 +56,7 @@
             <button id="btn-wicket" class="btn btn-dark heroCharacter" value="Wicket"><img src="assets/images/icons/wicket.png"></button>
           </div>
 
-          <div class="card-footer text-center" id="heroFooter">
+          <div class="card-footer text-center" id="heroSelectFooter">
             <span id="heroMouseOverOutput"></span>
           </div>
 
@@ -69,7 +69,7 @@
     <div class="row" id="villainSelectionArea">
       <div class="col-xs-12">
         <div class="card">
-          <div class="card-header text-right" id="villainHeader">
+          <div class="card-header text-right" id="villainSelectHeader">
               <img src="assets/images/icons/selectVillain.png" class="img-fluid">
           </div>
 
@@ -97,23 +97,13 @@
             <button id="btn-emperorpalpatine" class="btn btn-secondary villainCharacter" value="Emperor Palpatine"><span><img src="assets/images/icons/palpatine.png"></span></button>
           </div>
 
-          <div class="card-footer text-center" id="villainFooter">
+          <div class="card-footer text-center" id="villainSelectFooter">
             <span id="villainMouseOverOutput"></span>
           </div>
         </div>
       </div>
     </div> <!-- /row -->
 
-    <!-- <div class="row">
-      <div class="col-xs-12 divider"></div>
-    </div> /row -->
-
-    <!-- 
-      New row here
-      div that displays img of winner and loser of round at either end.
-      text in the middle that says [winner] defeated [loser] 
-      under text there should be a continue button/next fight
-    -->
     <div class="row bg-dark" id="battleComplete">
         <div class="col-xs-12">
           <div id="battleCompleteMessage">
@@ -124,76 +114,68 @@
         <button id="btn-quit" class="btn btn-danger" value="Quit"><span>Quit</span></button>
     </div>
 
-
-
-  
     <!-- BATTLE GROUND -->
     <div class="row" id="battleGround">
 
-      <div id="heroBattleCard" class="col-xs-5 inlineBlockDisplay">
+      <div id="heroBattleCard" class="col-xs-3 inlineBlockDisplay topCard">
         <div class="card">
-          <div class="card-header">
+          <div class="card-header" id="heroHeader">
             <div id="heroName" class="characterName">HERO</div>
             <div id="heroClass" class="characterClass">Hero</div>
           </div>
           <div id="heroArea" class="card-body">
             
           </div>
-          <div id="heroStats"class="card-footer text-muted">
+          <div id="heroStats" class="card-footer">
             Hero Stats
           </div>
-          <div>
+          <div id="heroFooterButtons">
             <button id="btn-attack" type="button" class="btn btn-danger">Attack</button>
             <button id="btn-defend" type="button" class="btn btn-warning">Defend</button>
           </div>
         </div>
       </div>
 
-      <div id="vsCard" class="col-xs-2 inlineBlockDisplay">
+      <div id="vsCard" class="col-xs-3 inlineBlockDisplay">
           <div>
-            <img src="assets/images/icons/vs.png" id="vsIcon">
+            <img src="assets/images/icons/vs.png" id="vsIcon" class="img-fluid">
           </div>
       </div>
 
-      <div class="col-xs-5 inlineBlockDisplay">
+      <div id="villainBattleCard" class="col-xs-3 inlineBlockDisplay topCard">
         <div  class="card">
-          <div class="card-header">
+          <div class="card-header" id="villainHeader">
             <div id="villainName" class="characterName">villain</div>
             <div id="villainClass" class="characterClass">villain</div>
           </div>
           <div id="villainArea" class="card-body">
               <img src="assets/images/300.png">
           </div>
-          <div id="villainStats" class="card-footer text-muted">
+          <div id="villainStats" class="card-footer" id="villainFooter">
             villain Stats
           </div>
         </div>
       </div>
 
     </div> <!-- /row -->
-    
-
-    <!--<div class="row">
-      <div class="col-xs-12 divider"></div>
-    </div>  /row -->
 
     <div class="row" id="fightDataArea">
 
-      <div class="col-xs-5 inlineBlockDisplay">
+      <div class="col-xs-8 inlineBlockDisplay topCard">
         <div class="card">
-          <div class="card-header"><h3>Fight Events</h3></div>
+          <div class="card-header fightDataCard"><h3>Fight Events</h3></div>
           <div id="fightEvents" class="card-body"></div>
-          <div class="card-footer text-muted"></div>
+          <div class="card-footer text-muted fightDataCard"></div>
         </div>
       </div>
 
       <div class="col-xs-2 inlineBlockDisplay">&nbsp</div>
 
-      <div id="battleOrderCard" class="col-xs-5 inlineBlockDisplay">
+      <div id="battleOrderCard" class="col-xs-2 inlineBlockDisplay topCard">
         <div class="card">
-          <div class="card-header"><h3>Battle Order</h3></div>
+          <div class="card-header fightDataCard"><h3>Battle Order</h3></div>
           <div id="battleOrder" class="card-body"></div>
-          <div class="card-footer text-muted"></div>
+          <div class="card-footer text-muted fightDataCard"></div>
         </div>
       </div>
 

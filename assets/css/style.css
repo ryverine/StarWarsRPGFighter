@@ -6,24 +6,19 @@ From calculator
 /*** ELEMENT ***/
 
 
-body{
-	background-image: url("assets/images/wallpaper.jpg");
-	background-color: transparent;
-	
-}
 
 button > span {
     font-size: 20px;
     font-weight: bolder;
 }
 
-
+body{
+	background: url("../images/wallpaper.jpg") no-repeat center fixed;
+	
+}
 
 /*** CLASS ***/
 
-.container{
-	background-color: transparent;
-}
 
 .row{
 	background-color: transparent;
@@ -74,24 +69,61 @@ button > span {
 	background-color: red;
 }
 
+
 /*** ID ***/
 
 #heroHeader{
 	background-color: #ffc107;
 }
 
-#heroFooter{
-	background-color: #ffc107;
+#heroFooterButtons{
+	background-color: #343a40;
 }
 
 #villainHeader{
-	background-color: #dc3545;;
+	background-color: #dc3545;
 }
 
 #villainFooter{
-	background-color: #dc3545;;
+	background-color: #343a40;
 }
 
+#heroSelectHeader{
+	background-color: #ffc107;
+}
+
+#heroSelectFooter{
+	background-color: #ffc107;
+}
+
+#villainSelectHeader{
+	background-color: #dc3545;
+}
+
+#villainSelectFooter{
+	background-color: #dc3545;
+}
+
+.topCard{
+	vertical-align: top;
+}
+
+.fightDataCard{
+	background-color: #343a40;
+	color: #ffc107;
+}
+
+#heroStats{
+	background-color: #343a40;
+	color: #ffc107;
+	font-weight: bold;
+}
+
+#villainStats{
+	background-color: #343a40;
+	color: #dc3545;
+	font-weight: bold;
+}
 
 #heroSelectionArea{
 	margin: 10px;
