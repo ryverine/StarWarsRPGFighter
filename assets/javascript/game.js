@@ -616,7 +616,7 @@ $(document).ready(function()
 		
 		opponent = new EmptyCharacter ();
 
-		refreshBattleGround();
+		//refreshBattleGround();
 
 		battleCompleteMessage.text("");
 
