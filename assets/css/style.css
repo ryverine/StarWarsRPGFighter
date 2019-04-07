@@ -76,6 +76,23 @@ button > span {
 
 /*** ID ***/
 
+#heroHeader{
+	background-color: #ffc107;
+}
+
+#heroFooter{
+	background-color: #ffc107;
+}
+
+#villainHeader{
+	background-color: #dc3545;;
+}
+
+#villainFooter{
+	background-color: #dc3545;;
+}
+
+
 #heroSelectionArea{
 	margin: 10px;
 }
