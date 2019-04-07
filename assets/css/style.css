@@ -5,6 +5,13 @@ From calculator
 
 /*** ELEMENT ***/
 
+
+body{
+	background-image: url("assets/images/wallpaper.jpg");
+	background-color: transparent;
+	
+}
+
 button > span {
     font-size: 20px;
     font-weight: bolder;
@@ -13,6 +20,14 @@ button > span {
 
 
 /*** CLASS ***/
+
+.container{
+	background-color: transparent;
+}
+
+.row{
+	background-color: transparent;
+}
 
 .inlineBlockDisplay{
 	display: inline-block;
