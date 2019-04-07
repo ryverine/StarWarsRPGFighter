@@ -97,9 +97,9 @@ $(document).ready(function()
 
 				villainSelectionArea.show(2000);
 
-				var imgSrc = "<img src='" + player.imgUrl + "'>";
+				//var imgSrc = "<img src='" + player.imgUrl + "'>";
 
-				$("#heroArea").html(imgSrc);
+				$("#heroArea").html("<img src='" + player.imgUrl + "'>");
 
 			}
 
@@ -124,6 +124,8 @@ $(document).ready(function()
 				setOpponentCharacter($(this).val());
 
 				villainSelectionArea.hide(2000);
+
+				$("#villainArea").html("<img src='" + opponent.imgUrl + "'>");
 
 				battleGround.show(2000);
 
@@ -755,7 +757,7 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 101,
-				imgUrl: "../images/card/luke.png",
+				imgUrl: "assets/images/card/luke.png",
 				actionState: "neutral",
 				characterClass: "Jedi Knight",
 				name: "Luke Skywalker",
@@ -808,7 +810,7 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 102,
-				imgUrl: "../images/",
+				imgUrl: "assets/images/card/chewbacca.png",
 				actionState: "neutral",
 				characterClass: "Outlaw Smuggler",
 				name: "Chewbacca",
@@ -870,7 +872,7 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 103,
-				imgUrl: "../images/",
+				imgUrl: "assets/images/card/han.png",
 				actionState: "neutral",
 				characterClass: "Outlaw Smuggler",
 				name: "Han Solo",
@@ -932,7 +934,7 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 104,
-				imgUrl: "../images/",
+				imgUrl: "assets/images/card/obiwan.png",
 				actionState: "neutral",
 				characterClass: "Jedi Knight",
 				name: "Obi-Wan Kenobi",
@@ -985,7 +987,7 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 105,
-				imgUrl: "../images/",
+				imgUrl: "assets/images/card/leia.png",
 				actionState: "neutral",
 				characterClass: "Princess",
 				name: "Leia Organa",
@@ -1047,7 +1049,7 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 106,
-				imgUrl: "../images/",
+				imgUrl: "assets/images/card/lando.png",
 				actionState: "neutral",
 				characterClass: "Outlaw Hustler",
 				name: "Lando Calrissian",
@@ -1109,7 +1111,7 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 107,
-				imgUrl: "../images/",
+				imgUrl: "assets/images/card/yoda.png",
 				actionState: "neutral",
 				characterClass: "Jedi Knight",
 				name: "Yoda",
@@ -1162,7 +1164,7 @@ $(document).ready(function()
 		{
 			player =  {
 				id: 108,
-				imgUrl: "../images/",
+				imgUrl: "assets/images/card/wicket.png",
 				actionState: "neutral",
 				characterClass: "Ewok Warrior",
 				name: "Wicket", // Full name is Wicket W. Warrick
@@ -1247,7 +1249,7 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 210,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/stormtrooper.png",
 			actionState: "neutral",
 			characterClass: "Imperial Soldier",
 			name: "Stormtrooper",
@@ -1317,7 +1319,7 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 209,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/sandtrooper.png",
 			actionState: "neutral",
 			characterClass: "Imperial Soldier",
 			name: "Sandtrooper",
@@ -1378,7 +1380,7 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 208,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/tuskenraider.png",
 			actionState: "neutral",
 			characterClass: "Outlaw Nomad",
 			name: "Tusken Raider",
@@ -1448,7 +1450,7 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 207,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/gamorrean.png",
 			actionState: "neutral",
 			characterClass: "Outlaw Bouncer",
 			name: "Gamorrean Guard",
@@ -1518,7 +1520,7 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 206,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/imperialguard.png",
 			actionState: "neutral",
 			characterClass: "Emperor's Personal Guard",
 			name: "Imperial Guard",
@@ -1588,7 +1590,7 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 205,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/greedo.png",
 			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "Greedo",
@@ -1650,7 +1652,7 @@ function setOpponentCharacter(theCharacter)
 	{
 		opponent =  {
 			id: 204,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/bossk.png",
 			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "Bossk",
@@ -1711,7 +1713,7 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 203,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/ig88.png",
 			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "IG-88",
@@ -1772,7 +1774,7 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 202,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/bobafett.png",
 			actionState: "neutral",
 			characterClass: "Bounty Hunter",
 			name: "Boba Fett",
@@ -1842,7 +1844,7 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 201,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/darthvader.png",
 			actionState: "neutral",
 			characterClass: "Sith Lord",
 			name: "Darth Vader",
@@ -1903,7 +1905,7 @@ function setOpponentCharacter(theCharacter)
 	{ 
 		opponent =  {
 			id: 200,
-			imgUrl: "../images/",
+			imgUrl: "assets/images/card/palpatine.png",
 			actionState: "neutral",
 			characterClass: "Sith Lord",
 			name: "Emperor Palpatine",
