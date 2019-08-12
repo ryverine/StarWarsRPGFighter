@@ -11,9 +11,8 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 ## Technologies
 
  * HTML
- * CSS
- * JavaScript
- * jQuery
+ * CSS, CSS Reset, Bootstrap
+ * JavaScript, jQuery
 
 ## Sources
 
