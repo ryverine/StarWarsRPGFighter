@@ -42,32 +42,55 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 
 ### Character Play Styles
 
-Each character has their own suttle differences. Not only are HP, Strength, Dexterity tailored to each character, but there is also Armor along with specific probably rates for combo and counter attack chance.
+Each character has their own suttle differences. Not only are HP, Strength, and Dexterity tailored to each character, but there is also Armor along with specific probably rates for combo and counter attack chance.
 
 ### Character Object
 
 {
+
 	id: INT,
+
 	imgUrl: STRING,
+
 	actionState: STRING,
+
 	characterClass: STRING,
+
 	name: STRING,
+
 	hp: INT,
+
 	strength: INT,
+
 	dexterity: INT,
+
 	attack: INT,
+
 	defend: INT,
+
 	armorClass: INT,
+
 	counterAttack: INT,
+
 	xpModifier: INT,
+
 	getAttackRoll: METHOD,
+
 	getComboHits: METHOD,
+
 	getAttackPower: METHOD,
+
     getDefenseRating: METHOD,
+
+
 	getCounterAttackPower: fMETHOD,
+
 	comboAttackRoll: METHOD,
+
 	counterAttackRoll: METHOD,
+
 	levelUp: METHOD
+
 }
 
 
