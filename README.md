@@ -14,10 +14,6 @@ For the combat calulations I have used D&D 5e as a basic guideline.
  * CSS, CSS Reset, Bootstrap
  * JavaScript, jQuery
 
-## Sources
-
-[Wookieepedia, the Star Wars Wiki](https://starwars.fandom.com/wiki/)
-
 ## Game Mechanics 
 
 ### Basic Play
@@ -118,15 +114,9 @@ Returns a `true` or `false` to indicate that character is allowed to make counte
 
 When player character defeats an opponent the player gets stronger. This is represented by increasing player `HP`, `strength`, and `dexterity` by the value of a dice roll and the player character’s `xpModifier` value.
 
+## Acknowledgments
 
-
-
-
-
-
-
-
-
+I used art work from various sources for the player select icons and the larger battle stage VS icons. I do not know the individuals that created these works of art. If you know who the artist are please let me know so that I may give them credit for their wonderful work.
 
 
 
