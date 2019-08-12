@@ -1,4 +1,4 @@
-# unit-4-game
+# Star Wars: RPG Fighter!
 
 Interactive Star Wars themed game using jQuery.
 
