@@ -24,14 +24,21 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 ### Basic Play
 
 1. Player selects a hero character by clicking a hero icon.
+
 ![Select Hero](/documentation/hero_select.gif)
+
 2. The player selects a villian character by clicking a villian icon.
+
 ![Select Villain](/documentation/villain_select.gif)
+
 3. The player and villian have two actions, Attack and Defend.
 
-  * Attack: Character attempts to deal damage to their opponent's health (HP). 
+  * Attack: Character attempts to deal damage to their opponent's health (HP).
+
 ![Player Attack](/documentation/player_attack.gif)
+
   * Defend: The character anticipates an attack from their opponent and attempts to evade the attack, with a chance of making a counter-attack.
+  
   ![Player Defend](/documentation/player_defend.gif)
 
 4. The goal is for the hero character to defeat each villian character, but the hero may lose the fight. A character will be defeated once their HP reaches zero.
@@ -82,8 +89,7 @@ Each character has their own suttle differences. Not only are HP, Strength, and 
 
     getDefenseRating: METHOD,
 
-
-	getCounterAttackPower: fMETHOD,
+	getCounterAttackPower: METHOD,
 
 	comboAttackRoll: METHOD,
 
