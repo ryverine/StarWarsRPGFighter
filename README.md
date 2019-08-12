@@ -116,7 +116,7 @@ When player character defeats an opponent the player gets stronger. This is repr
 
 ## Acknowledgments
 
-I used art work from various sources for the player select icons and the larger battle stage VS icons. I do not know the individuals that created these works of art. If you know who the artist are please let me know so that I may give them credit for their wonderful work.
+I used art work from various sources for the player select icons and the larger battle stage VS icons. I do not know the individuals that created these works of art. If you know who the artists are please let me know so that I may give them credit for their wonderful work.
 
 
 
