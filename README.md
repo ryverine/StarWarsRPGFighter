@@ -38,7 +38,7 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 ![Player Attack](/documentation/player_attack.gif)
 
   * Defend: The character anticipates an attack from their opponent and attempts to evade the attack, with a chance of making a counter-attack.
-  
+
   ![Player Defend](/documentation/player_defend.gif)
 
 4. The goal is for the hero character to defeat each villian character, but the hero may lose the fight. A character will be defeated once their HP reaches zero.
@@ -51,53 +51,75 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 
 Each character has their own suttle differences. Not only are HP, Strength, and Dexterity tailored to each character, but there is also Armor along with specific probably rates for combo and counter attack chance.
 
-### Character Object
+#### Character Stats
 
-{
+A brief explanation of key character stats.
 
-	id: INT,
+##### hp: INT
 
-	imgUrl: STRING,
+Represents "Hit Points" which indicates whether a character has been defeated or not. When a character’s `HP` reaches zero they have been defeated.
 
-	actionState: STRING,
+##### strength: INT
 
-	characterClass: STRING,
+`Strength` is a value used in determining `attack power` for certain characters. It differs from the `Attack` stat in that `strength` increases upon `level up`.
 
-	name: STRING,
+##### dexterity: INT
 
-	hp: INT,
+`Dexterity` is a value used in determining `attack power` for certain characters and, unlike `Strength`, it is used to  determine `Defense Rating` for all characters. It differs from the `defend` stat in that `dexterity` increases upon level up.
 
-	strength: INT,
+##### attack: INT
 
-	dexterity: INT,
+A modifier value that acts as a damage rating for the character’s particular weapon. `Attack` is used to determine `attack power` for some characters. This value does not change on `level up`.
 
-	attack: INT,
+##### defend: INT
 
-	defend: INT,
+A modifier value that acts as a rating to represent the character’s innate defensive abilities. `Defend` is used to determine `defense rating` for all characters. This value does not change on `level up`.
 
-	armorClass: INT,
+##### armorClass: INT
 
-	counterAttack: INT,
+This value represents that some characters are wearing heavier armor than others. A character’s attack damage is only applied to the opponent's `HP` if it meets or exceeds the value of the opponent’s `armor class`.
 
-	xpModifier: INT,
+##### counterAttack: INT
 
-	getAttackRoll: METHOD,
+This value is used to determine damage done to opponent when character is successful at preemptively defending against attack. 
 
-	getComboHits: METHOD,
+##### xpModifier: INT
 
-	getAttackPower: METHOD,
+Value used upon `level up` to increase player stats. This represents the particular character’s potential to grow as a combatant.
 
-    getDefenseRating: METHOD,
+##### getAttackRoll: METHOD
 
-	getCounterAttackPower: METHOD,
+Returns an integer value that represents the quality of the character’s attack. This vaue is compared to the `armor class` of the opponent, so that there is no guarantee that an attack made by a character will be successful against their opponent.
 
-	comboAttackRoll: METHOD,
+##### getComboHits: METHOD
 
-	counterAttackRoll: METHOD,
+Returns an integer value that represents the number of attacks to execute as the character’s single attack action. For most characters this value is hard-coded as one, but some characters get to make a dice roll to see how many attacks their combo will include.
 
-	levelUp: METHOD
+##### getAttackPower: METHOD
 
-}
+Returns an integer that represents the damage that a character’s attack will do to their opponent. Some characters use `strength` to determine this value, others use `dexterity`.
+
+##### getDefenseRating: METHOD
+
+Returns an integer that represents the damage absorption. This is used when a character defends and their opponent attacks. The opponent’s attack will be reduced by a percentage that is determined by the `defense rating`.
+
+##### getCounterAttackPower: METHOD
+
+Returns an integer that represents the damage that a character’s attack will do to their opponent. Uses `dexterity` and `counter attack` to determine this value.
+
+##### comboAttackRoll: METHOD
+
+Returns a `true` or `false` to indicate that character is allowed to make a `combo attack` on opponent. Each character has a different probability to execute a `counter attack`, thematically based on the type of character and weapon they use.
+
+##### counterAttackRoll: METHOD
+
+Returns a `true` or `false` to indicate that character is allowed to make counter attack on opponent. Each character has a different probability to execute a counter attack, thematically based on the type of character and weapon they use.
+
+##### levelUp: METHOD
+
+When player character defeats an opponent the player gets stronger. This is represented by increasing player `HP`, `strength`, and `dexterity` by the value of a dice roll and the player character’s `xpModifier` value.
+
+
 
 
 
