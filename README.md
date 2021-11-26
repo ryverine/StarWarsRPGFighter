@@ -21,11 +21,11 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 
 ## Game Mechanics 
 
-1. Player selects a `hero` character by clicking a hero icon, and then selects a `villian` character to battle.
+1. Player selects a `Hero` character by clicking a hero icon, and then selects a `Villian` character to battle.
 
 ![Select Hero and Villain](/documentation/villain_select.gif)
 
-2. The player and villian have two actions, Attack and Defend.
+2. The player and villian have two actions, `Attack` and `Defend`.
 
   * __Attack:__ Character attempts to deal damage to their opponent's health (HP).
 
@@ -35,11 +35,11 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 
   ![Player Defend](/documentation/player_defend.gif)
 
-3. The goal is for the hero character to defeat each villian character, but the hero may lose the fight. A character will be defeated once their HP reaches zero.
+3. The goal is for the `Hero` character to defeat each `Villian` character, but the `Hero` may lose the fight. A character will be defeated once their HP reaches zero.
 
-4. If hero wins their HP is reset and they get an increase to key stats. Player will then select the next villian to fight.
+4. If the `Hero` wins their HP is reset and they get an increase to key stats. the player will then select the next villian to fight.
 
-5. If villian wins it is game over.
+5. If a `Villian` wins it is game over for the player.
 
 ## Character Play Styles
 
