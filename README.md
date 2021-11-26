@@ -3,7 +3,7 @@
 
 # Star Wars: RPG Fighter!
 
-[Deployed App](https://ryverine.github.io/unit-4-game)
+[Deployed App](https://ryverine.github.io/StarWarsRPGFighter/)
 
 Interactive Star Wars themed game using jQuery.
 
@@ -21,15 +21,11 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 
 ## Game Mechanics 
 
-1. Player selects a hero character by clicking a hero icon.
+1. Player selects a `hero` character by clicking a hero icon, and then selects a `villian` character to battle.
 
-![Select Hero](/documentation/hero_select.gif)
+![Select Hero and Villain](/documentation/villain_select.gif)
 
-2. The player selects a villian character by clicking a villian icon.
-
-![Select Villain](/documentation/villain_select.gif)
-
-3. The player and villian have two actions, Attack and Defend.
+2. The player and villian have two actions, Attack and Defend.
 
   * __Attack:__ Character attempts to deal damage to their opponent's health (HP).
 
@@ -39,11 +35,11 @@ For the combat calulations I have used D&D 5e as a basic guideline.
 
   ![Player Defend](/documentation/player_defend.gif)
 
-4. The goal is for the hero character to defeat each villian character, but the hero may lose the fight. A character will be defeated once their HP reaches zero.
+3. The goal is for the hero character to defeat each villian character, but the hero may lose the fight. A character will be defeated once their HP reaches zero.
 
-5. If hero wins their HP is reset and they get an increase to key stats. Player will then select the next villian to fight.
+4. If hero wins their HP is reset and they get an increase to key stats. Player will then select the next villian to fight.
 
-6. If villian wins it is game over.
+5. If villian wins it is game over.
 
 ## Character Play Styles
 
